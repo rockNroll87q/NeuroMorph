@@ -119,21 +119,7 @@ def load_mesh_data_set_with_fullpath(config_data_dict: DataConfig):
     return lh_pial_surface, rh_pial_surface, lh_wm_surface, rh_wm_surface, \
         lh_thickness, rh_thickness, orig, aparc, dataset_type, database_name, subject_name
 
-def loadInhomogeneityVolume(fullpath_inho_volume):
-    """
-    Load the augmentation volume 'inhomogeneity_volume.npy'
 
-    :param fullpath_inho_volume: str with the fullpath of the volume to load
-    :return inhomogeneity_volume: numpy volume of size 512^3 used in data augmentation
-    """
-    if fullpath_inho_volume:
-        inhomogeneity_volume = np.load(fullpath_inho_volume)
-        logger.info('Loaded inhomogeneity_volume (shape): ' + str(inhomogeneity_volume.shape))
-    else:
-        logger.warning('inhomogeneity_volume not present!')
-        inhomogeneity_volume = None
-
-    return inhomogeneity_volume
 
 def prepareDataset(config: Config):
     """
@@ -169,9 +155,6 @@ def prepareDataset(config: Config):
     logger.info('Output shape: ' + output_shape)
     logger.info('Output configuration: ' + output_config)
 
-    # Load inhomogeneity volume (used for data augmentation)
-    inhomogeneity_volume = loadInhomogeneityVolume(config_data_dict['Inh_vol_path'])
-
     # Create a dict with all the material inside
     dataset = {}
     dataset['X_test_paths'] = X_test_paths
@@ -189,8 +172,6 @@ def prepareDataset(config: Config):
     dataset["dataset_test_type"] = dataset_type
     dataset["database_test_name"] = database_name
     dataset["subject_test_names"] = subject_name
-
-    dataset['inhomogeneity_volume'] = inhomogeneity_volume
     
     return dataset
 

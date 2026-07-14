@@ -27,7 +27,6 @@ class DataConfig(BaseModel):
     file_identifier : str = Field(".nii.gz", title="A substring that can be used to find the T1w files when recursively searching a data.vol_in directory")
     Path_in_csv: str = Field('/NeuroMorph/csv/', title="csv path")
     Filename_csv: str = Field('LOD_Brain_dataset_valid_external.csv', title="csv filename")
-    Inh_vol_path: str = Field('src/DeepThickness/ImplicitNet/data/inhomogeneity_volume/inhomogeneity.npy', title="inhomogeneity path")
 
 class InputOutputConfig(BaseModel):
     # Possible input combination
