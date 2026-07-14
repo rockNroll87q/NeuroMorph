@@ -1,0 +1,236 @@
+_wandb:
+    value:
+        cli_version: 0.21.0
+        e:
+            p6lbkm148k0xffkxil6zwjqbsyggajh7:
+                args:
+                    - --network.num_initial_filter=4
+                    - --network.num_blocks_per_level=3
+                    - --network.conv_block=BottleNeck
+                    - --network.dropout_rate=0.1
+                    - --network.activation_enc=elu
+                    - --network.activation_dec=elu
+                    - --network.stride=2
+                    - --network.bn=GN
+                    - --network.kernel_initializer=he_normal
+                    - --network.kernel_regularizer=1e-2
+                    - --network.skip_connection_type=Concatenate
+                    - --network.n_identity_layers=3
+                    - --network.squeeze_excite=False
+                    - --network.split_decoder_level=4
+                    - --training.lr=0.0013044632426312975
+                    - --training.optimizer=Adam
+                    - --training.cache=False
+                    - --losses.distance_set_0_loss=weighted_mae_0
+                    - --losses.level_set_0_loss=ranged_weighted_mae
+                    - --losses.target_gradient=step
+                    - --augment.augmentation=True
+                    - --augment.prob_overall=0.75
+                    - --augment.prob_inho=1.0
+                    - --augment.prob_colo=1.0
+                    - --augment.prob_blur=1.0
+                    - --augment.prob_down=1.0
+                    - --augment.prob_salt=1.0
+                    - --augment.prob_gaus=1.0
+                    - --augment.prob_ghos=1.0
+                    - --augment.prob_gamm=1.0
+                    - --augment.prob_cont=1.0
+                    - --augment.prob_slic=0.0
+                    - --augment.prob_bias=1.0
+                    - --input_output.out_pial_surface_level_set=True
+                    - --input_output.out_pial_surface_distance_set=True
+                    - --input_output.out_wm_surface_level_set=False
+                    - --input_output.out_wm_surface_distance_set=False
+                    - --input_output.out_segmentation=False
+                    - --input_output.in_T1=True
+                    - --input_output.in_gm_probability_map=True
+                    - --input_output.in_wm_probability_map=True
+                    - --input_output.in_segmentation=True
+                    - --training.train_model=True
+                    - --testing.wandb_log=True
+                    - --testing.set=valid
+                    - --input_output.no_of_save_outputs=71
+                    - --testing.regional_predictions=True
+                    - --testing.pial_mc_level=1.0
+                    - --testing.pial_norm_multiplier=0.9
+                cpu_count: 128
+                cpu_count_logical: 128
+                cudaVersion: "12.6"
+                disk:
+                    /:
+                        total: "67108864"
+                        used: "16384"
+                email: 2955365d@student.gla.ac.uk
+                executable: /usr/bin/python
+                gpu: NVIDIA A100-SXM4-80GB
+                gpu_count: 1
+                gpu_nvidia:
+                    - architecture: Ampere
+                      cudaCores: 6912
+                      memoryTotal: "85899345920"
+                      name: NVIDIA A100-SXM4-80GB
+                      uuid: GPU-2f315c14-1353-9a81-ea9d-e53c71d4db05
+                host: gpu101.pri.mars.alces.network
+                memory:
+                    total: "540066766848"
+                os: Linux-4.18.0-553.5.1.el8_10.x86_64-x86_64-with-glibc2.29
+                program: /DeepThickness/src/model_training/main_implicitnet.py
+                python: CPython 3.8.10
+                root: /DeepThickness/out/
+                startedAt: "2025-08-21T09:09:28.784489Z"
+                writerId: p6lbkm148k0xffkxil6zwjqbsyggajh7
+        m: []
+        python_version: 3.8.10
+        t:
+            "1":
+                - 2
+                - 3
+                - 80
+            "2":
+                - 2
+                - 3
+                - 80
+            "3":
+                - 2
+                - 3
+                - 8
+                - 17
+                - 62
+            "4": 3.8.10
+            "5": 0.21.0
+            "10":
+                - 17
+            "12": 0.21.0
+            "13": linux-x86_64
+        visualize:
+            Pial_Mean_Predicted_CTh_KDE:
+                panel_config:
+                    fieldSettings:
+                        lineKey: lineKey
+                        lineVal: lineVal
+                        step: step
+                    panelDefId: wandb/lineseries/v0
+                    stringSettings:
+                        title: Pial_Mean_Predicted_CTh (KDE)
+                        xname: Value
+                    transform:
+                        name: tableWithLeafColNames
+                    userQuery:
+                        queryFields:
+                            - args:
+                                - name: runSets
+                                  value: ${runSets}
+                              fields:
+                                - fields: []
+                                  name: id
+                                - fields: []
+                                  name: name
+                                - fields: []
+                                  name: _defaultColorIndex
+                                - args:
+                                    - name: tableKey
+                                      value: Pial_Mean_Predicted_CTh_KDE_table
+                                  fields: []
+                                  name: summaryTable
+                              name: runSets
+                panel_type: Vega2
+augment:
+    value:
+        augmentation: true
+        prob_bias: 1
+        prob_blur: 1
+        prob_colo: 1
+        prob_cont: 1
+        prob_down: 1
+        prob_gamm: 1
+        prob_gaus: 1
+        prob_ghos: 1
+        prob_inho: 1
+        prob_overall: 0.75
+        prob_salt: 1
+        prob_slic: 0
+data:
+    value:
+        Filename_csv: LOD_Brain_dataset_valid_external.csv
+        Inh_vol_path: /DeepThickness/inhomogeneity_volume/inhomogeneity.npy
+        Path_in_csv: /DeepThickness/csv/
+        file_identifier: nii.gz
+        path_spheres_csv: sphere_masking.csv
+experiment:
+    value:
+        name: DeepThickness
+        seed: 28
+input_output:
+    value:
+        in_T1: true
+        in_gm_probability_map: true
+        in_segmentation: true
+        in_volume_size: 256
+        in_wm_probability_map: true
+        out_pial_surface_distance_set: true
+        out_pial_surface_level_set: true
+        out_segmentation: false
+        out_volume_size: 256
+        out_wm_surface_distance_set: false
+        out_wm_surface_level_set: false
+losses:
+    value:
+        distance_set_0_loss: weighted_mae_0
+        kl_weight: 0.1
+        level_set_0_loss: ranged_weighted_mae
+        range_weight: 10
+        target_gradient: step
+        target_max: 1
+network:
+    value:
+        activation_dec: elu
+        activation_enc: elu
+        bn: GN
+        conv_block: BottleNeck
+        dropout_rate: 0.1
+        kernel_initializer: he_normal
+        kernel_regularizer: 0.01
+        n_identity_layers: 3
+        num_blocks_per_level: 3
+        num_initial_filter: 4
+        skip_connection_type: Concatenate
+        split_decoder_level: 4
+        squeeze_excite: false
+        stride: 2
+testing:
+    value:
+        apply_mesh_post_processing: true
+        evaluate_mesh: false
+        inference_mode: T1w
+        keep_mesh_in_memory: false
+        mesh_decimation_target: 75000
+        model_evaluation: false
+        no_of_save_outputs: 1
+        pial_mc_level: 1
+        pial_norm_multiplier: 0.9
+        regional_predictions: true
+        results_split_factors:
+            - dataset_type
+        save_outputs: true
+        set: valid
+        size: null
+        vol_in: null
+        wandb_log: false
+        wm_mc_level: 0.25
+        wm_norm_multiplier: 0.3
+training:
+    value:
+        batch_size: 1
+        cache: false
+        epochs: 50
+        exp_path: /DeepThickness/out/
+        initial_weights_path: null
+        lr: 0.0013044632426312975
+        optimizer: Adam
+        save_train_best_model_only: true
+        shuffle_train_ds: true
+        test_best_model: true
+        train_model: false
+        train_size: null
+        validation_freq: 1
+        validation_steps: 10

@@ -1,0 +1,127 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.13.5
+    framework: keras
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.8.10
+    start_time: 1754818233.40612
+    t:
+      1:
+      - 2
+      - 3
+      - 5
+      - 53
+      - 55
+      - 80
+      2:
+      - 2
+      - 3
+      - 5
+      - 53
+      - 55
+      - 80
+      3:
+      - 3
+      - 8
+      - 17
+      - 23
+      - 37
+      4: 3.8.10
+      5: 0.13.5
+      8:
+      - 5
+      10:
+      - 3
+augment:
+  desc: null
+  value:
+    augmentation: true
+    augmentation_AF: false
+    prob_bias: 0.0
+    prob_blur: 1.0
+    prob_colo: 1.0
+    prob_cont: 1.0
+    prob_down: 1.0
+    prob_flip: 0.5
+    prob_gamm: 1.0
+    prob_gaus: 1.0
+    prob_geom: 1.0
+    prob_ghos: 1.0
+    prob_grid: 1.0
+    prob_inho: 1.0
+    prob_neck: 0.0
+    prob_overall: 0.9
+    prob_resi: 0.0
+    prob_rota: 0.0
+    prob_salt: 1.0
+    prob_slic: 1.0
+    prob_tran: 0.0
+    z_score_volume: false
+data:
+  desc: null
+  value:
+    Filename_csv: LOD_Brain_retrain_wv_csf.csv
+    Inh_vol_path: /LOD_Brain/inhomogeneity_volume/inhomogeneity.npy
+    Path_in_csv: /LOD_Brain/data/analysis/csv/
+    Path_in_data: /LOD_Brain/data/
+    normalisation: z_score_volume
+exp_name:
+  desc: null
+  value: LOD_Brain
+network:
+  desc: null
+  value:
+    activation_dec: relu
+    activation_enc: relu
+    bn: GN
+    boost_first_layer: false
+    cerebrum_net: false
+    conv_block: Plain
+    conv_repetition: false
+    downsampling_factor: 4
+    dropout_rate: 0.05
+    filter_multiplicative_factors: []
+    flat_net: false
+    kernel_initializer: he_normal
+    kernel_regularizer: 0.0001
+    num_blocks_per_level: 3
+    num_classes: 8
+    num_initial_filter: 8
+    num_levels: 2
+    pre_ds: 0
+    size: 256
+    skip_intermediate_result: false
+    stride: 2
+    upskip: UpSampling3D
+    vanilla_unet: false
+seed:
+  desc: null
+  value: 23
+training:
+  desc: null
+  value:
+    batch_size: 1
+    coarse_to_fine: true
+    epochs: 50
+    epochs_ft: 20
+    exp_path: /output/
+    fine_tuning: false
+    ft_loss: categorical_crossentropy
+    loss: per_channel_dice_loss
+    lr: 0.0005
+    optimizer: Adam
+    ref_epochs: 10
+    ref_loss: categorical_crossentropy
+    ref_lr: 1.0e-05
+    ref_unfreeze: false
+    refinement: false
+    save_train_best_model_only: true
+    test_best_model: true
+    train_size: null
+    validation_freq: 1
+    validation_steps: 10
+    weights_path: ''
