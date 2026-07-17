@@ -159,6 +159,16 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+# tmp dir
+tmp/
+
+# docker / singularity
+*.simg
+*.dockerfile
+
+# vs code
+.vscode
+
 # Pyre type checker
 .pyre/
 

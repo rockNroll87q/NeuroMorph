@@ -21,7 +21,7 @@ class ExperimentConfig(BaseModel):
     seed: PositiveInt = Field(28, title="random seed")
 
 class DataConfig(BaseModel):
-    exp_path: str = Field('/NeuroMorph/out/', title="Private: experiment path")
+    output_dir: str = Field('/NeuroMorph/out/', title="Dir to save the outputs")
     inference_mode: str = Field('T1w', title="What type of inference to perform. If input is T1w only (e.g. file path , dir path or csv of paths), use 'T1w'. If input is a csv of paths to T1w, GM, WM and Seg, use 'all_inputs'")
     vol_in: Optional[str]  = Field(None, title="Path to a single T1w volume or a folder containing T1w volumes for inference")
     file_identifier : str = Field(".nii.gz", title="A substring that can be used to find the T1w files when recursively searching a data.vol_in directory")

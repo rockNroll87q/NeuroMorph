@@ -84,8 +84,14 @@ def findGPUtoUse():
         for gpu in gpus:
             tf.config.experimental.set_memory_growth(gpu, True)
 
-def configure_device(device: str) -> None:
+def configure_device(device: str, max_cpus: int = None) -> None:
     """Configure TensorFlow device visibility before model load."""
+    
+    if max_cpus is not None:
+        tf.config.threading.set_intra_op_parallelism_threads(max_cpus)
+        tf.config.threading.set_inter_op_parallelism_threads(max_cpus)
+        logger.info(f"CPU threads limited to {max_cpus}.")
+        
     if device == "cpu":
         tf.config.set_visible_devices([], "GPU")
         logger.info("Device set to CPU (GPU disabled).")
@@ -108,6 +114,19 @@ def configure_device(device: str) -> None:
             logger.info("No GPU detected. Running on CPU.")
     else:
         raise ValueError(f"Unknown device '{device}'. Use 'auto', 'cpu', or 'gpu'.")
+
+def configure_cpu_threads(max_cpus: int) -> None:
+    """
+    Restrict TensorFlow's CPU thread pools to a fixed number of threads.
+
+    Args:
+        max_cpus: Maximum number of CPU threads TensorFlow is allowed to use.
+
+    Returns:
+        None
+    """
+    tf.config.threading.set_intra_op_parallelism_threads(max_cpus)
+    tf.config.threading.set_inter_op_parallelism_threads(max_cpus)
 
 def get_string_io_configuration(config:InputOutputConfig) -> Tuple[str, str, str, str]:
 
@@ -296,7 +315,7 @@ def update_config_for_inference(config, out_folder):
     model_type = None
     all_anat = None
 
-    config.data.exp_path = Path(config.data.exp_path)
+    config.data.output_dir = Path(config.data.output_dir)
 
     if config.data.inference_mode == "T1w":
 
@@ -307,14 +326,15 @@ def update_config_for_inference(config, out_folder):
 
         # From single T1w volume or directory of T1w volumes
         if config.data.vol_in is not None:
-            if os.path.isdir(config.data.vol_in):
-                all_anat = findListOfAnatomical(path_in=config.data.vol_in, identifier=config.data.file_identifier)
+            volume_path = Path(config.data.vol_in)
+            if volume_path.is_dir():
+                all_anat = findListOfAnatomical(path_in=volume_path, identifier=config.data.file_identifier)
 
-            elif os.path.isfile(config.data.vol_in):
-                all_anat = [config.data.vol_in]
+            elif volume_path.is_file():
+                all_anat = [volume_path]
 
             else:
-                logger.error(f"Path: {config.data.vol_in} does not exist")
+                raise FileNotFoundError(f"Path: {volume_path} does not exist")
 
             config.data.Path_in_csv = out_folder
             config.data.Filename_csv = Path(
@@ -323,7 +343,7 @@ def update_config_for_inference(config, out_folder):
 
 
         # From CSV with T1 paths
-        if config.data.Filename_csv is not None:
+        if config.data.Path_in_csv is not None and config.data.Filename_csv is not None:
             config.data.Filename_csv = Path(
                 adapt_existing_csv(existing_csv_path=f'{config.data.Path_in_csv}/{config.data.Filename_csv}', 
                                      csv_output_dir=out_folder)).name

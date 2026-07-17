@@ -16,6 +16,7 @@ import pymeshlab as pml
 import os
 from scipy.interpolate import RegularGridInterpolator
 from scipy.spatial import KDTree
+from pathlib import Path
 from loguru import logger
 import fast_simplification
 from skimage.measure import marching_cubes
@@ -248,18 +249,24 @@ class CorticalSurfaceMap:
                 files.
         
         """
+        if quality_mapper_path is None:
+            quality_mapper_path = (Path(__file__).resolve().parent / 'quality_mappers/').resolve()
+            
         if not os.path.exists(quality_mapper_path):
             logger.warning(f"Quality mapper path {quality_mapper_path} does not exist. Using default path /NeuroMorph/src/DeepThickness/quality_mappers/")
             quality_mapper_path = '/NeuroMorph/src/DeepThickness/quality_mappers/'
+       
         assert output_path.endswith(".ply")
         assert quality_mapper is None or quality_mapper == "BR" or quality_mapper == "BGR"
+       
         mesh_set = pml.MeshSet()
         mesh_set.add_mesh(pml.Mesh(self.vertices, self.faces, v_scalar_array=self.vertices_values))
         # If no color is selected color vertices with grey (best color to see mesh problems)
         if quality_mapper is None:
             mesh_set.compute_color_by_function_per_vertex(x="128", y="128", z="128")
         else:
-            mesh_set.compute_color_from_scalar_using_transfer_function_per_vertex(minqualityval=minval, maxqualityval=maxval, tfslist="Custom Transfer Function File",csvfilename=f"{quality_mapper_path}{quality_mapper}.tf")
+            tf_path = Path(quality_mapper_path)/f"{quality_mapper}.tf"
+            mesh_set.compute_color_from_scalar_using_transfer_function_per_vertex(minqualityval=minval, maxqualityval=maxval, tfslist="Custom Transfer Function File", csvfilename=str(tf_path))
         mesh_set.save_current_mesh(output_path, binary=True)
 
     def save_as_freesurfer(self, out_surface_path:str, out_overlay_path=None):

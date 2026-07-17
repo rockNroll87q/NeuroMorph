@@ -43,7 +43,7 @@ def main_inference():
 
     # Load previous trained config then update with any terminal commands
     config = Config(**python_utils.load_args_config())
-    path_out_folder = Path(f"{config.data.exp_path}")
+    path_out_folder = Path(f"{config.data.output_dir}")
 
     # Check if input is T1w only or also pre-generated LOD-Brain outputs
     model_type, config = python_utils.update_config_for_inference(
@@ -59,7 +59,8 @@ def main_inference():
     logger.info("\n\n\n******** Run started ********")
     logger.info(f"Running on {os.uname()[1]}")
     logger.info(f"Command line:{sys.executable}{sys.argv}")
-    python_utils.configure_device(device=config.testing.device)
+    python_utils.configure_device(device=config.testing.device, 
+                                  max_cpus=config.testing.limit_cpu_count)
 
     # Build the dataset for Model Testing
     logger.info("\n\n\n******** Dataset Preparation ********")

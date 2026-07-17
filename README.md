@@ -58,7 +58,7 @@ singularity shell --cleanenv --nv \
 ```bash
 python3 /NeuroMorph/scripts/run_inference.py \
          --data.vol_in='/NeuroMorph/neuromorph_input/sub-0001_T1w.nii.gz' \
-         --data.exp_path='/NeuroMorph/neuromorph_output' 
+         --data.output_dir='/NeuroMorph/neuromorph_output' 
 ```
 
 For working examples and more usage cases, see [Inference Examples](./Inference_Guide.ipynb#Inference-Examples).

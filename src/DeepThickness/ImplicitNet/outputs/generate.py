@@ -292,10 +292,9 @@ def single_prediction(model, X_test, config=None, check_dir=None):
 
     return pred_dict
 
-def parralel_process_ds(
+def parallel_process_ds(
     ds_test,
     model,
-    dataset,
     subject_names,
     subject_save_data,
     config,
@@ -310,12 +309,11 @@ def parralel_process_ds(
     - Generate model predictions for each sample
     - Generate the predicted cortical mesh (including CTh overlay)
     - The operations are designed to ensure that mesh generation (CPU-based) for multiple samples
-      are processed in parrallel with sequential model predictions (GPU-based)
+      are processed in parallel with sequential model predictions (GPU-based)
 
     Args:
         ds_test: tf.data.Dataset
         model (keras.Model): trained model to be used for inference and evaluation
-        dataset (dict): Dataset dictionary (currently unused inside this function).
         subject_names: A list of all subject names in the dataset
         subject_save_data (dict): dictionary containing each subject's save information
         config (Config): configuration parameters
@@ -337,7 +335,7 @@ def parralel_process_ds(
     subject_idx = 0
     segmentation_mask_i = None
     
-    # Create an exector for parallel cpu processing
+    # Create an executor for parallel cpu processing
     with ProcessPoolExecutor(max_workers=num_cpu_workers) as mesh_executor:
         for X_test in tqdm(ds_test,
             desc="Predicting subjects",
@@ -464,7 +462,7 @@ def inference_process(
     # Setup and definitions
     subject_save_data = None
     start_time = time.time()
-    num_cpu_workers = os.cpu_count()-1 if limit_cpu_count is None else limit_cpu_count  
+    num_cpu_workers = os.cpu_count()-2 if limit_cpu_count is None else limit_cpu_count  
     subjects_out_dir = opj(path_out_folder, "Subjects/")
     if not os.path.exists(subjects_out_dir):
         os.mkdir(subjects_out_dir)
@@ -485,10 +483,9 @@ def inference_process(
     subject_names = dataset["subject_test_names"]
 
     # Get the subject results
-    subject_info = parralel_process_ds(
+    subject_info = parallel_process_ds(
         ds_test=ds_test,
         model=model,
-        dataset=dataset,
         subject_names=subject_names,
         subject_save_data=subject_save_data,
         config=config,

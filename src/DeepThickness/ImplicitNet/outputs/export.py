@@ -134,7 +134,7 @@ def save_predicted_meshes(pred_ct_map, quality_mapper, config, subj_dir, subject
     # save predicted ply mesh with CTh overlay
     if selected_type: 
         if config.input_output.out_surface_mesh:
-            pred_ct_map.save(pred_ct_map_path, quality_mapper, minval=1.5, maxval=5.0)
+            pred_ct_map.save(pred_ct_map_path, quality_mapper, minval=1.5, maxval=5.0, quality_mapper_path=None)
 
         if config.input_output.out_surface_fs:
             pred_ct_map.save_as_freesurfer(pred_surface_path, pred_thickness_path)
@@ -152,9 +152,10 @@ def save_predicted_meshes(pred_ct_map, quality_mapper, config, subj_dir, subject
             T1_mesh = pred_ct_map.copy()
             T1_mesh.apply_from_distance_set(distance_set=T1, smooth_thickness=False, 
                                             interpolation_method="linear")
-            T1_mesh.save(pred_T1w_path,quality_mapper,
-                        minval=min(T1_mesh.vertices_values),maxval=max(T1_mesh.vertices_values))
-            
+            T1_mesh.save(pred_T1w_path, quality_mapper,
+                        minval=min(T1_mesh.vertices_values),maxval=max(T1_mesh.vertices_values),
+                        quality_mapper_path=None)
+                                    
 def compute_conform_affine(orig_affine, orig_shape, orig_zooms,
                            target_shape=(256,256,256),
                            target_zooms=(1.0,1.0,1.0),
