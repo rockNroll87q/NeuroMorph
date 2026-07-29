@@ -14,7 +14,7 @@ Main Script for testing after training. Also contains modular functions used in 
 
 import os
 import sys
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import ProcessPoolExecutor, Future, as_completed
 from tqdm import tqdm
 import numpy as np
 from loguru import logger
@@ -292,6 +292,39 @@ def single_prediction(model, X_test, config=None, check_dir=None):
 
     return pred_dict
 
+
+
+
+class SequentialExecutor:
+    """
+    Logic Summary:
+        Drop-in replacement for ProcessPoolExecutor that executes submitted
+        callables immediately in the current process. Wraps results in a
+        concurrent.futures.Future so downstream code using submit() and
+        as_completed() works identically regardless of execution mode.
+
+    Args:
+        None
+
+    Returns:
+        None
+    """
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc_info):
+        return False
+
+    def submit(self, fn, *args, **kwargs):
+        future = Future()
+        try:
+            future.set_result(fn(*args, **kwargs))
+        except Exception as e:
+            future.set_exception(e)
+        return future
+
+
 def parallel_process_ds(
     ds_test,
     model,
@@ -299,8 +332,8 @@ def parallel_process_ds(
     subject_save_data,
     config,
     quality_mapper,
-    num_cpu_workers,
     subjects_out_dir,
+    device="gpu",
 ):
     """
     This function completes the following:
@@ -309,7 +342,8 @@ def parallel_process_ds(
     - Generate model predictions for each sample
     - Generate the predicted cortical mesh (including CTh overlay)
     - The operations are designed to ensure that mesh generation (CPU-based) for multiple samples
-      are processed in parallel with sequential model predictions (GPU-based)
+      are processed in parallel with sequential model predictions (GPU-based), or run entirely
+      sequentially depending on the parallel flag
 
     Args:
         ds_test: tf.data.Dataset
@@ -320,6 +354,8 @@ def parallel_process_ds(
         quality_mapper (str): what colour to apply to the vertices values when saving the ply mesh
         num_cpu_workers (int): The number of CPU workers allocated to mesh generation
         subjects_out_dir (str): out dir to store the subject folders and results in
+        parallel (bool): if True use ProcessPoolExecutor for mesh generation, if False
+            run mesh generation sequentially in the current process
 
     Returns:
         subject_info (dict): Per-subject results dictionary containing subject
@@ -329,14 +365,14 @@ def parallel_process_ds(
 
     """
 
-    # Setup and definitions
     subject_info = {}
     mesh_futures = {}
     subject_idx = 0
     segmentation_mask_i = None
-    
-    # Create an executor for parallel cpu processing
-    with ProcessPoolExecutor(max_workers=num_cpu_workers) as mesh_executor:
+
+    executor = ProcessPoolExecutor(max_workers=config.testing.limit_cpu_count) if device == "gpu" else SequentialExecutor()
+
+    with executor as mesh_executor:
         for X_test in tqdm(ds_test,
             desc="Predicting subjects",
             total=len(ds_test),
@@ -344,37 +380,29 @@ def parallel_process_ds(
         ):
 
             # --- Phase 1: Model Predictions ---
-            # Process subject information
             subject_name = subject_names[subject_idx]
             subj_dir = subject_save_data[subject_name]["subj_dir"]
             subject_info[subject_name] = {"index": subject_idx, "subj_dir_i": subj_dir}
             subject_save = subject_idx < config.input_output.no_of_save_outputs or config.input_output.no_of_save_outputs == -1
 
-            # Generate a dictionary of subject's predictions based on input_output 
             predictions = single_prediction(
                 model, X_test, config, check_dir=os.path.join(subjects_out_dir, subject_name)
             )
 
-            # Store volumetrics if segmentation_mask if provided
             if config.input_output.out_segmentation is True:
                 segmentation_mask_i = predictions['segmentation_mask']
                 subject_info[subject_name].update(extract_volumetric_features(segmentation_mask_i))
-            
-            # For each surface type
+
             for surface in ('pial', 'wm'):
-                
-                # Check if there are any surface type specific predictions                
+
                 if any(surface in key for key in predictions):
-                    
-                    # Extract loaded pred_mesh if exists otherwise None 
+
                     pred_surface_mesh = predictions[f'{surface}_ct_map'] \
-                        if any("ct_map" in key for key in predictions) else None 
-                    
-                    # Extract loaded or predicted pred level and distance set 
+                        if any("ct_map" in key for key in predictions) else None
+
                     pred_level_set_i = predictions[f'{surface}_level_set']
                     pred_distance_set_i = predictions[f'{surface}_distance_set']
 
-                    # Check if outputs are to be saved for the subject volume
                     if subject_save:
                         save_subject_volumes(
                             pred_level_set=pred_level_set_i,
@@ -385,8 +413,7 @@ def parallel_process_ds(
                             surface_type=surface
                         )
 
-                    # --- Phase 2: Mesh Generation --- evaluate_mesh
-                    # Submit each subject's mesh generation as a job for cpu parallel processing
+                    # --- Phase 2: Mesh Generation ---
                     future = mesh_executor.submit(
                         subject_mesh_processing,
                         pred_level_set=pred_level_set_i,
@@ -402,7 +429,6 @@ def parallel_process_ds(
                     mesh_futures[future] = subject_name
             subject_idx += 1
 
-        # Return meshes and results once complete
         for future in tqdm(
             as_completed(mesh_futures),
             total=len(mesh_futures),
@@ -412,11 +438,11 @@ def parallel_process_ds(
             subject_name = mesh_futures[future]
             try:
                 mesh_result_dict = future.result()
-                surface = mesh_result_dict["surface_type"]             
-                results = mesh_result_dict["subject_results"]          
+                surface = mesh_result_dict["surface_type"]
+                results = mesh_result_dict["subject_results"]
                 subject_idx = subject_info[subject_name]["index"]
                 subject_info[subject_name].setdefault("results", {})[surface] = results
-            
+
             except Exception as e:
                 logger.warning(f"{subject_name} (idx={subject_idx}) failed: {e!r}")
                 continue
@@ -429,10 +455,8 @@ def parallel_process_ds(
     return subject_info
 
 
-def inference_process(
-    model, ds_test: tf.data.Dataset, dataset: dict, config: Config, path_out_folder,
-    limit_cpu_count: int = None,
-):
+def inference_process(model, ds_test: tf.data.Dataset, dataset: dict, config: Config, 
+                      path_out_folder, device: str = "gpu"):
     """
     Function to run inference across the test dataset, generate meshes,
     and write per-subject results.
@@ -443,7 +467,6 @@ def inference_process(
         - dataset (dict): dictionary containing the paths of the test dataset
         - config (Config): configuration parameters
         - path_out_folder (str): out folder where the output dir is
-        - limit_cpu_count (int, optional): cap on CPU workers for mesh generation.
 
     Returns:
         None
@@ -462,11 +485,9 @@ def inference_process(
     # Setup and definitions
     subject_save_data = None
     start_time = time.time()
-    num_cpu_workers = os.cpu_count()-2 if limit_cpu_count is None else limit_cpu_count  
     subjects_out_dir = opj(path_out_folder, "Subjects/")
     if not os.path.exists(subjects_out_dir):
         os.mkdir(subjects_out_dir)
-  
     
     dataset_size = int(len(dataset["X_test_paths"]))
     assert dataset_size > 0, "No subjects found for testing"
@@ -490,8 +511,8 @@ def inference_process(
         subject_save_data=subject_save_data,
         config=config,
         quality_mapper="BR",
-        num_cpu_workers=num_cpu_workers,
-        subjects_out_dir=subjects_out_dir
+        subjects_out_dir=subjects_out_dir,
+        device=device
     )
     
     write_results_csv(subject_info=subject_info, dataset=dataset, 

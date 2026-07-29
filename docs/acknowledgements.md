@@ -16,9 +16,9 @@ Data were [in part] provided by the 1000 Functional Connectomes Project (FCP). F
 
 This research has been conducted using the UK Biobank Resource under Application 17689.
 
-Austin Dibble was supported by a PhD grant from the Scottish Graduate School of Social Science, Doctoral Training Partnership (SGSSS-DTP), on behalf of the Economic and Social Research Council (ESRC, grant number: ES/P000681/1).
+Connor Dalby was supported by a PhD grant by the Medical Research Council (MRC) as part of the Precision Medicine Doctoral Training Programme (MRC, grant number: MR/W006804/1).
 
-Connor Dalby was supported by a PhD grant by the Medical Research Council (MRC) as part of the Precision Medicine Doctoral Training Programme.
+Austin Dibble was supported by a PhD grant from the Scottish Graduate School of Social Science, Doctoral Training Partnership (SGSSS-DTP), on behalf of the Economic and Social Research Council (ESRC, grant number: ES/P000681/1).
 
 A.F. was supported by a grant from the Biotechnology and Biology Research Council (BBSRC, grant number: BB/S006605/1) and the Bial Foundation (Bial Foundation Grants Programme; Grant id: A-29315, number: 203/2020, grant edition: G-15516).
 

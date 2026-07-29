@@ -84,49 +84,51 @@ def findGPUtoUse():
         for gpu in gpus:
             tf.config.experimental.set_memory_growth(gpu, True)
 
-def configure_device(device: str, max_cpus: int = None) -> None:
-    """Configure TensorFlow device visibility before model load."""
-    
-    if max_cpus is not None:
-        tf.config.threading.set_intra_op_parallelism_threads(max_cpus)
-        tf.config.threading.set_inter_op_parallelism_threads(max_cpus)
-        logger.info(f"CPU threads limited to {max_cpus}.")
-        
-    if device == "cpu":
-        tf.config.set_visible_devices([], "GPU")
-        logger.info("Device set to CPU (GPU disabled).")
-    elif device == "gpu":
-        gpus = tf.config.list_physical_devices("GPU")
-        findGPUtoUse()
-        if not gpus:
-            logger.warning(
-                "No GPU detected. Falling back to CPU. "
-                "Check your CUDA/cuDNN installation or use --device cpu explicitly."
-            )
-        else:
-            logger.info(f"GPU detected: {[g.name for g in gpus]}")
-    elif device == "auto":
-        gpus = tf.config.list_physical_devices("GPU")
-        if gpus:
-            logger.info(f"Auto-selected GPU: {[g.name for g in gpus]}")
-            findGPUtoUse()
-        else:
-            logger.info("No GPU detected. Running on CPU.")
-    else:
-        raise ValueError(f"Unknown device '{device}'. Use 'auto', 'cpu', or 'gpu'.")
-
-def configure_cpu_threads(max_cpus: int) -> None:
+def configure_device(device: str) -> int:
     """
-    Restrict TensorFlow's CPU thread pools to a fixed number of threads.
+    Logic Summary:
+        Configures TensorFlow device visibility before model load. In "auto"
+        mode, selects a GPU if one is available, otherwise falls back to CPU.
+        In manual "gpu" mode, enforces GPU use and falls back to CPU with a
+        warning if none is found. In manual "cpu" mode, disables GPU
+        visibility directly. Also configures TensorFlow intra/inter op thread
+        counts, splitting the available CPU count between TensorFlow and mesh
+        processing, leaving one CPU free for the OS.
 
     Args:
-        max_cpus: Maximum number of CPU threads TensorFlow is allowed to use.
+        device (str): One of "auto", "gpu", or "cpu"
+        cpu_limit (int): Number of CPUs to use, defaults to os.cpu_count() if None
 
     Returns:
-        None
+        cpu_limit (int): Number of CPUs allocated per TensorFlow thread pool,
+            or the original cpu_limit if the total CPU count is too low to split
     """
-    tf.config.threading.set_intra_op_parallelism_threads(max_cpus)
-    tf.config.threading.set_inter_op_parallelism_threads(max_cpus)
+
+    if device not in ("auto", "gpu", "cpu"):
+        raise ValueError(f"Unknown device '{device}'. Use 'auto', 'cpu', or 'gpu'.")
+
+    if device in ("auto", "gpu"):
+        gpus = tf.config.list_physical_devices("GPU")
+
+        if gpus:
+            findGPUtoUse()
+            logger.info(f"GPU detected: {[g.name for g in gpus]}")
+            device = "gpu"
+        else:
+            if device == "gpu":
+                logger.warning("Check your CUDA/cuDNN installation or use --device cpu explicitly.\n Reverting to CPU.")
+            else:
+                logger.info("No GPU detected. Running on CPU.")
+            device = "cpu"
+
+    if device == "cpu":
+        tf.config.set_visible_devices([], "GPU")
+        logger.info("Device set to CPU (GPU disabled). Serial data loading and mesh generation - may be slower.")
+        tf.config.threading.set_inter_op_parallelism_threads(1)
+    
+    return device
+
+
 
 def get_string_io_configuration(config:InputOutputConfig) -> Tuple[str, str, str, str]:
 

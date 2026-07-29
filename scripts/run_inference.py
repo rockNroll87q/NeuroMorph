@@ -59,8 +59,7 @@ def main_inference():
     logger.info("\n\n\n******** Run started ********")
     logger.info(f"Running on {os.uname()[1]}")
     logger.info(f"Command line:{sys.executable}{sys.argv}")
-    python_utils.configure_device(device=config.testing.device, 
-                                  max_cpus=config.testing.limit_cpu_count)
+    device = python_utils.configure_device(device=config.testing.device)
 
     # Build the dataset for Model Testing
     logger.info("\n\n\n******** Dataset Preparation ********")
@@ -79,7 +78,7 @@ def main_inference():
         dataset=dataset,
         config=config,
         path_out_folder=path_out_folder,
-        limit_cpu_count=config.testing.limit_cpu_count
+        device=device
     )
 
 if __name__ == "__main__":
