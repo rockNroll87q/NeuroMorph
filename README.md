@@ -8,7 +8,7 @@
 🖥️ [Website](https://github.com/rockNroll87q/NeuroMorph) &nbsp;|&nbsp; 
 📓 [Inference Guide](./Inference_Guide.ipynb) &nbsp;|&nbsp;
 ⚙️ [Installation Guide](./docs/installation.md) &nbsp;|&nbsp;
-🐳 [Docker](https://hub.docker.com/r/rocknroll87q/deep_thickness) &nbsp;|&nbsp; 
+🐳 [Docker](https://hub.docker.com/r/rocknroll87q/neuromorph) &nbsp;|&nbsp; 
 📦 [Weights](https://huggingface.co/NeuroAI-UofG/NeuroMorph) &nbsp;|&nbsp;
 
 
