@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-US" }}">
+  <head>
+
+    {% if site.google_analytics %}
+      <script async src="https://www.googletagmanager.com/gtag/js?id={{ site.google_analytics }}"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ site.google_analytics }}');
+      </script>
+    {% endif %}
+    <meta charset="UTF-8">
+
+	  
+	  
+	  
+{% seo %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#157878">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+  </head>
+  <body>
+    <header class="page-header" role="banner">
+      <h1 class="project-name">{{ page.title | default: site.title | default: site.github.repository_name }}</h1>
+      <h2 class="project-tagline">{{ page.description | default: site.description | default: site.github.project_tagline }}</h2>
+    <table align="center" width="50%">
+      <!-- Row 1: Connor on his own -->
+      <tr>
+      <td align="center" width="25%" colspan="4">
+        <span style="font-size:18px">
+          <a href="https://orcid.org/0009-0005-5705-061X" target="_blank">Connor Dalby</a>
+        </span> &#x266B;
+      </td>
+      </tr>
+
+      <!-- Row 2 -->
+      <tr>
+      <td align="center" width="25%">
+        <span style="font-size:18px">
+          <a href="https://orcid.org/0009-0008-3963-041X" target="_blank">Austin Dibble</a>
+        </span> &#x266B;
+      </td>
+      <td align="center" width="25%">
+        <span style="font-size:18px">
+          <a href="http://sergio-benini.unibs.it/" target="_blank">Sergio Benini</a>
+        </span> &#9826;
+      </td>
+      <td align="center" width="25%">
+        <span style="font-size:18px">
+          <a href="http://sergio-benini.unibs.it/" target="_blank">Damiano Ferrari</a>
+        </span> &#9826;
+      </td>
+      <td align="center" width="25%">
+        <span style="font-size:18px">
+          <a href="https://orcid.org/0000-0003-3850-1487">Donald M. Lyall</a>
+        </span> &#8224;
+      </td>
+      </tr>
+
+      <!-- Row 3 -->
+      <tr>
+      <td align="center" width="25%">
+        <span style="font-size:18px">
+          <a href="https://orcid.org/0000-0003-1694-1174">Monika Harvey</a>
+        </span> &#x266B;
+      </td>
+      <td align="center" width="25%">
+        <span style="font-size:18px">
+          <a href="https://www.researchgate.net/profile/Terry-Quinn-2" target="_blank">Terry Quinn</a>
+        </span> &#8225;
+      </td>
+      <td align="center" width="25%">
+        <span style="font-size:18px">
+          <a href="https://orcid.org/0000-0002-0143-4324">Lars Muckli</a>
+        </span> &#x266B;
+      </td>
+      <td align="center" width="25%">
+        <span style="font-size:18px">
+          <a href="https://orcid.org/0000-0002-4542-112X" target="_blank">Alessio Fracasso</a>
+        </span> &#x266B;
+      </td>
+      </tr>
+
+      <!-- Row 4: Michele on his own -->
+      <tr>
+      <td align="center" width="25%" colspan="4">
+        <span style="font-size:18px">
+          <a href="https://www.michelesvanera.org/" target="_blank">Michele Svanera</a>
+        </span> &#x266B; *
+      </td>
+      </tr>
+    </table>
+
+
+        <span style="font-size:15px">&#x266B; - School of Psychology & Neuroscience, University of Glasgow, UK</span><br>
+        <span style="font-size:15px">&#9826; - Department of Information Engineering, University of Brescia, Italy</span><br>
+        <span style="font-size:15px">&#8224; - School of Health & Wellbeing, University of Glasgow, UK</span><br>
+        <span style="font-size:15px">&#8225; - School of Cardiovascular & Metabolic Health, University of Glasgow, UK</span><br>
+        <span style="font-size:15px">* - Corresponding author</span><br>
+
+  </header>
+        
+	<table align=center width=600px>
+	<tr>
+
+	<td align=center width=300px>
+		<center>
+		<kbd>
+			<a href="https://github.com/rockNroll87q/neuromorph/" target="_blank"><img class="" src = "../misc/code_2.png" height="70px"></a><br>
+			<span style="font-size:14px">NeuroMorph</span>
+		</kbd>
+		</center>
+	  </td>	
+  <td align=center width=300px>
+		<center>
+		<kbd>
+			<a href="https://github.com/rockNroll87q/morphological_fingerprinting/" target="_blank"><img class="" src = "../misc/code_2.png" height="70px"></a><br>
+			<span style="font-size:14px">Morphological Fingerprinting</span>
+		</kbd>
+		</center>
+	  </td>
+	<td align=center width=300px>
+		<center>
+		<kbd>
+			<a href="placeholder" target="_blank"><img class="" src = "../misc/paper3.png" height="75px"></a><br>
+		</kbd>
+		</center>
+	  </td>
+  <td align=center width=300px>
+      <center>
+      <kbd>
+          <a href="https://hub.docker.com/r/rocknroll87q/neuromorph" target="_blank"><img class="" src = "../misc/docker2.png" height="75px"></a><br>
+      </kbd>
+      </center>
+    </td>
+
+	  
+	  
+	  
+	<hr>
+    <main id="content" class="main-content" role="main">
+      {{ content }}
+
+      <footer class="site-footer">
+        {% if site.github.is_project_page %}
+          <span class="site-footer-owner"><a href="{{ site.github.repository_url }}">{{ site.github.repository_name }}</a> is maintained by <a href="{{ site.github.owner_url }}">{{ site.github.owner_name }}</a>.</span>
+        {% endif %}
+      </footer>
+    </main>
+  </body>
+</html>
