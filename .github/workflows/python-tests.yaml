@@ -35,7 +35,8 @@ jobs:
       with:
         src: >-
           ./src/
-          
-    - name: Run tests with unittest
-      run: |
-        python -m unittest discover tests
+
+    # Uncomment if unittests are added to the project
+    # - name: Run tests with unittest
+    #   run: |
+    #     python -m unittest discover tests
