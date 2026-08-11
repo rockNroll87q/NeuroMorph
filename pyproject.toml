@@ -5,12 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "neuromorph"
 version = "0.1.0"
-description = "NeuroMorph: mixed TensorFlow/PyTorch pipeline for neuroimaging and mesh processing"
+description = "NeuroMorph: A Unified Morphological Reference Space for Cross-disease Brain Profiling"
 readme = "README.md"
 requires-python = ">=3.8.10,<3.9"
 license = {text = "MIT"}
 authors = [
-    {name = "Your Name", email = "you@example.com"}
+    {name = "Connor Dalby", email = "c.dalby.1@research.gla.ac.uk"},
 ]
 
 dependencies = [
@@ -42,7 +42,7 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/yourusername/neuromorph"
+Repository = "https://github.com/rockNroll87q/NeuroMorph"
 
 [tool.setuptools.packages.find]
 where = ["src"]
