@@ -3,19 +3,14 @@ layout: page
 title: <a href="https://rocknroll87q.github.io/neuromorph/">NeuroMorph</a>
 ---
 
-# **NeuroMorph: A unified morphological reference space for cross-disease brain profiling**
+# **NeuroMorph: A Unified Morphological Reference Space for Cross-Disease Brain Profiling**
 
 ### Abstract
 
 
 Structural MRI is routinely acquired in clinical practice, yet quantitative morphometry has had limited impact on clinical decision-making. 
-Overlapping symptoms, trajectories and comorbidities remain difficult to interpret within disease-specific frameworks, leaving unclear how individual patients relate to the broader organization of brain disease.
-Here, we construct a cross-disease morphological reference space from 110,591 T1w MRI scans of 78,794 participants, spanning four disease families, nineteen conditions, and seven subtypes. 
-To construct this space, we developed NeuroMorph, an AI framework deriving thirteen interpretable morphological features and individual normative deviation profiles. 
-The reference space reveals shared and distinct morphological signatures that distinguish conditions within a hierarchy of families, diagnoses and individual profiles.
-It identifies overlapping and comorbid morphological profiles and captures longitudinal deviations that anticipate diagnosis and predict progression. 
-Together, these findings establish a unified framework for mapping brain disease organization and positioning individual patients within its morphological landscape.
-Code, model, and demo are available on the [project website](https://rocknroll87q.github.io/neuromorph/).
+Overlapping symptoms, trajectories and comorbidities remain difficult to interpret within disease-specific frameworks, leaving it unclear how individual patients relate to the broader organization of brain disease.Here, we construct a cross-disease morphological reference space from 110,591 T1w MRI scans of 78,794 participants, spanning four disease families, 19 diagnoses, and seven subtypes. To construct this space, we developed NeuroMorph, an AI framework deriving thirteen interpretable morphological descriptors and individual normative deviation profiles. The reference space reveals shared and distinct morphological signatures that distinguish conditions within a hierarchy of disease families, diagnoses, subtypes and individual profiles. It identifies overlapping and comorbid morphological profiles and captures longitudinal deviations that precede clinical diagnosis and track progression. Together, these findings establish a unified framework for mapping brain disease organization and positioning individual patients within its morphological landscape.
+Code, model, and demo are available on the [GitHub repository](https://github.com/rockNroll87q/NeuroMorph).
 
 <p align="center">
 <img src="./misc/Overview_Figure.png" width="75%" />
