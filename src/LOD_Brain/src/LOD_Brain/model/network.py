@@ -5,12 +5,12 @@ Created on Feb 12 2021
 * Michele Svanera, University of Glasgow
 """
 
-import tensorflow as tf
-from tensorflow.keras.models import Model
-from loguru import logger
 import numpy as np
-from LOD_Brain.model.layers import BottleNeck, UpBottleNeck, Plain, UpPlain
+import tensorflow as tf
 from LOD_Brain.config import NetConfig as Config
+from LOD_Brain.model.layers import BottleNeck, Plain, UpBottleNeck, UpPlain
+from loguru import logger
+from tensorflow.keras.models import Model
 
 
 def build_flat_model(config: Config, ds_factor: int = 1) -> Model:
@@ -46,14 +46,14 @@ def build_flat_model(config: Config, ds_factor: int = 1) -> Model:
     x = inputs_resized
 
     # Encoder
-    with tf.name_scope(f"Encoder"):
+    with tf.name_scope("Encoder"):
         x = tf.keras.layers.Conv3D(filters=4 * num_filters[0],
                                    kernel_size=(3, 3, 3),
                                    strides=(1, 1, 1),
                                    padding='same',
                                    name=f"enc_{4 * num_filters[0]}")(x)
         skip_x.append(x)
-        for i, f in enumerate(num_filters[1:-1]):
+        for _, f in enumerate(num_filters[1:-1]):
             x = conv_block["Encoder"](filter_num=f, dropout_rate=config.dropout_rate, stride=config.stride,
                                       activation=config.activation_enc, bn=config.bn, groups=min(8, f),
                                       name=f"enc_cb_{f}")(x)
@@ -69,7 +69,7 @@ def build_flat_model(config: Config, ds_factor: int = 1) -> Model:
     skip_x.reverse()
 
     # Decoder
-    with tf.name_scope(f"Decoder"):
+    with tf.name_scope("Decoder"):
         for i, f in enumerate(num_filters[1:]):
             x = conv_block["Decoder"](filter_num=f, dropout_rate=config.dropout_rate, stride=config.stride,
                                       activation=config.activation_dec, bn=config.bn, groups=min(8, f),
@@ -78,7 +78,7 @@ def build_flat_model(config: Config, ds_factor: int = 1) -> Model:
             skip_up.append(x)
 
     # Output
-    with tf.name_scope(f"Output"):
+    with tf.name_scope("Output"):
         x = tf.keras.layers.Conv3D(filters=4 * num_filters[-1],  # config.num_classes,
                                    kernel_size=(3, 3, 3),
                                    padding='same',
@@ -124,14 +124,14 @@ def build_vanilla_unet_model(config: Config) -> Model:
     x = inputs_resized
 
     # Encoder
-    with tf.name_scope(f"Encoder"):
+    with tf.name_scope("Encoder"):
         x = tf.keras.layers.Conv3D(filters=4 * num_filters[0],
                                    kernel_size=(3, 3, 3),
                                    strides=(1, 1, 1),
                                    padding='same',
                                    name=f"enc_{4 * num_filters[0]}")(x)
         skip_x.append(x)
-        for i, f in enumerate(num_filters[1:-1]):
+        for _, f in enumerate(num_filters[1:-1]):
             x = conv_block["Encoder"](filter_num=f, dropout_rate=config.dropout_rate, stride=config.stride,
                                       activation=config.activation_enc, bn=config.bn, groups=min(8, f),
                                       name=f"enc_cb_{f}")(x)
@@ -147,7 +147,7 @@ def build_vanilla_unet_model(config: Config) -> Model:
     skip_x.reverse()
 
     # Decoder
-    with tf.name_scope(f"Decoder"):
+    with tf.name_scope("Decoder"):
         for i, f in enumerate(num_filters[1:]):
             x = conv_block["Decoder"](filter_num=f, dropout_rate=config.dropout_rate, stride=config.stride,
                                       activation=config.activation_dec, bn=config.bn, groups=min(8, f),
@@ -155,7 +155,7 @@ def build_vanilla_unet_model(config: Config) -> Model:
             x = tf.keras.layers.Add()([x, skip_x[i]])
 
     # Output
-    with tf.name_scope(f"Output"):
+    with tf.name_scope("Output"):
         x = tf.keras.layers.Conv3D(filters=4 * num_filters[-1],  # config.num_classes,
                                    kernel_size=(3, 3, 3),
                                    padding='same',
@@ -171,7 +171,7 @@ def build_vanilla_unet_model(config: Config) -> Model:
                                activation='softmax',
                                kernel_initializer=config.kernel_initializer,
                                kernel_regularizer=tf.keras.regularizers.L2(config.kernel_regularizer),
-                               name=f'main_output')(x)
+                               name='main_output')(x)
 
     return Model(inputs, x)
 

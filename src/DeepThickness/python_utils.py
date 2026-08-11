@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 @authors:
 * Connor Dalby, University of Glasgow
@@ -15,14 +14,17 @@ import sys
 
 sys.path.insert(0, "src/")
 
-from typing import Tuple
-import tensorflow as tf
-from loguru import logger
-from DeepThickness.ImplicitNet.config import Config, InputOutputConfig
-from LOD_Brain.src.deepthickness_tools import findListOfAnatomical, generate_testing_csv, adapt_existing_csv
-import nvidia_smi
 from pathlib import Path
+from typing import Tuple
+
+import nvidia_smi
+import tensorflow as tf
 import yaml
+from loguru import logger
+
+from DeepThickness.ImplicitNet.config import Config, InputOutputConfig
+from LOD_Brain.src.deepthickness_tools import adapt_existing_csv, findListOfAnatomical, generate_testing_csv
+
 
 def selectGPUsAvailability():
     """
@@ -191,7 +193,8 @@ def load_args_config(config_cls=Config):
         if i_root_arg not in all_args:
             all_args[i_root_arg] = {}
 
-        if (i_root_arg not in config_cls().dict().keys()) or (i_param_arg not in config_cls().dict()[i_root_arg].keys()):
+        if (i_root_arg not in config_cls().dict()) or \
+            (i_param_arg not in config_cls().dict()[i_root_arg]):
             logger.warning(f'Error: argument -{i_root_arg}.{i_param_arg}- not recognised.')
             sys.exit()
 
@@ -220,7 +223,7 @@ def load_config_from_yaml(config_yaml_path = Path("src/DeepThickness/weights/pia
     """
     
     # Load with UnsafeLoader so we get Path objects
-    with open(config_yaml_path, 'r') as f:
+    with open(config_yaml_path) as f:
         raw = yaml.load(f, Loader=yaml.UnsafeLoader)
 
     # Convert any Path → str (so it matches config)
@@ -355,7 +358,8 @@ def update_config_for_inference(config, out_folder):
 
     elif config.data.inference_mode == "all_inputs":
         
-        assert config.input_output.out_segmentation is not True, "Segmentation can only be generated from T1w volume only as input"
+        assert config.input_output.out_segmentation is not True, \
+            "Segmentation can only be generated from T1w volume only as input"
         
         config.input_output.in_T1 = True
         config.input_output.in_gm_probability_map = True
@@ -371,7 +375,8 @@ def flatten_dict(d, parent_key='', sep='_'):
     items = {}
     for k, v in d.items():
         # if this is the top‑level “results” chunk, don’t include “results” in the name
-        new_key = (parent_key + sep + k.replace(' ', '_')) if parent_key and parent_key != 'results' else k.replace(' ', '_')
+        new_key = (parent_key + sep + k.replace(' ', '_')) if parent_key \
+            and parent_key != 'results' else k.replace(' ', '_')
 
         if isinstance(v, dict):
             # if we're descending into the “results” dict, reset parent_key to ''

@@ -5,6 +5,7 @@ Created on Feb 12 2021
 Model utility functions
 """
 import os
+
 from loguru import logger
 
 
@@ -23,10 +24,9 @@ def freeze_level(model, level: int = 0):
     :param level: level name
     """
     for layer in model.layers:
-        if layer.variables:
-            if layer.variables[0].name.split('/')[0] == f'Level_{level}':
-                layer.trainable = False
-                continue
+        if layer.variables and layer.variables[0].name.split('/')[0] == f'Level_{level}':
+            layer.trainable = False
+            continue
 
 
 def freeze_level_lte(model, level_lte: int = 0):

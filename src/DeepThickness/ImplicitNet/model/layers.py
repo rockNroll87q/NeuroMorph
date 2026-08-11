@@ -3,10 +3,12 @@ Created on Feb 12 2021
 @author: met
 """
 import sys
-from loguru import logger
+from typing import Optional
+
 import tensorflow as tf
 import tensorflow_addons as tfa
-from typing import Optional
+from loguru import logger
+
 
 class BottleNeck(tf.keras.layers.Layer):
     def __init__(self, filter_num: int, dropout_rate: float, stride: int = 2, activation: str = 'relu', bn: bool = True,
@@ -27,7 +29,7 @@ class BottleNeck(tf.keras.layers.Layer):
         :param kernel_regularizer: regularizer that applies a L2 regularization penalty of the given value.
         :param mult_factor: middle filter multiplicative factor
         """
-        super(BottleNeck, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.activation = activation
         self.filter_num = filter_num
         self.dropout_rate = dropout_rate
@@ -136,7 +138,7 @@ class Plain(tf.keras.layers.Layer):
         :param kernel_regularizer: regularizer that applies a L2 regularization penalty of the given value.
         :param mult_factor: middle filter multiplicative factor
         """
-        super(Plain, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.activation = activation
         self.filter_num = filter_num
         self.dropout_rate = dropout_rate
@@ -148,7 +150,7 @@ class Plain(tf.keras.layers.Layer):
 
         # Define conv layers with Convs, BN, and activation
         self.convs = tf.keras.Sequential()
-        for i in range(self.n_conv_row):
+        for _ in range(self.n_conv_row):
             self.convs.add(tf.keras.layers.Conv3D(filters=filter_num * self.mult_factor,  # Conv
                                                   kernel_size=(3, 3, 3),
                                                   strides=1,
@@ -213,7 +215,7 @@ class UpBottleNeck(tf.keras.layers.Layer):
         :param kernel_regularizer: regularizer that applies a L2 regularization penalty of the given value.
         :param mult_factor: middle filter multiplicative factor
         """
-        super(UpBottleNeck, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.activation = activation
         self.filter_num = filter_num
         self.dropout_rate = dropout_rate
@@ -320,7 +322,7 @@ class UpPlain(tf.keras.layers.Layer):
         :param kernel_regularizer: regularizer that applies a L2 regularization penalty of the given value.
         :param mult_factor: middle filter multiplicative factor
         """
-        super(UpPlain, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.activation = activation
         self.filter_num = filter_num
         self.dropout_rate = dropout_rate
@@ -332,7 +334,7 @@ class UpPlain(tf.keras.layers.Layer):
 
         # Define conv layers with Convs, BN, and activation
         self.convs = tf.keras.Sequential()
-        for i in range(self.n_conv_row):
+        for _ in range(self.n_conv_row):
             self.convs.add(tf.keras.layers.Conv3D(filters=filter_num * self.mult_factor,  # Conv
                                                   kernel_size=(3, 3, 3),
                                                   strides=1,
@@ -432,12 +434,13 @@ class UpPlain(tf.keras.layers.Layer):
     #             }
     
 class BottleNeck_v2(tf.keras.layers.Layer):
-    def __init__(self, filter_num: int, dropout_rate: float = 0.1, stride: int = 2, activation: str = 'relu', bn: bool = True,
-                 groups: int = 8, kernel_initializer: str = 'he_normal', kernel_regularizer: float = 1.e-4,
-                 n_conv_row: int = 1, mult_factor: int = 1, downsampling: str = 'conv', **kwargs):
+    def __init__(self, filter_num: int, dropout_rate: float = 0.1, stride: int = 2, activation: str = 'relu', 
+                 bn: bool = True,groups: int = 8, kernel_initializer: str = 'he_normal', 
+                 kernel_regularizer: float = 1.e-4, n_conv_row: int = 1, mult_factor: int = 1, 
+                 downsampling: str = 'conv', **kwargs):
         """
         ResNet-like encoder bottleneck block for 3D tensors.
-        Structure: - Input -|> Conv > BN > Act > (Conv > BN > Act) * 4 '!= kernels' > Conv > BN >  Act > Dropout > Add > Activation -
+        Structure: Input |> Conv > BN > Act > (Conv > BN > Act) * 4 '!= kernels' > Conv > BN > Act > Dropout > Add > Act
                             \___________________> Conv > BN >____________________________________/
         :param filter_num: base number of used filters.
         :param dropout_rate: used dropout rate. A 0 value means no dropout.
@@ -449,7 +452,7 @@ class BottleNeck_v2(tf.keras.layers.Layer):
         :param kernel_regularizer: regularizer that applies a L2 regularization penalty of the given value.
         :param mult_factor: middle filter division factor
         """
-        super(BottleNeck_v2, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.activation = activation
         self.filter_num = filter_num
         self.dropout_rate = dropout_rate
@@ -591,13 +594,14 @@ class BottleNeck_v2(tf.keras.layers.Layer):
         return cls(**config)
 
 class BottleNeck_v3(tf.keras.layers.Layer):
-    def __init__(self, filter_num: int, dropout_rate: float = 0.1, stride: int = 2, activation: str = 'relu', bn: bool = True,
-                 groups: int = 8, kernel_initializer: str = 'he_normal', kernel_regularizer: float = 1.e-4,
-                 n_conv_row: int = 1, mult_factor: int = 1, downsampling: str = 'conv', **kwargs):
+    def __init__(self, filter_num: int, dropout_rate: float = 0.1, stride: int = 2, activation: str = 'relu', 
+                 bn: bool = True, groups: int = 8, kernel_initializer: str = 'he_normal', 
+                 kernel_regularizer: float = 1.e-4, n_conv_row: int = 1, mult_factor: int = 1, 
+                 downsampling: str = 'conv', **kwargs):
         """
         ResNet-like encoder bottleneck block for 3D tensors.
-        Structure: - Input -|> Conv > BN > Act > (Conv > BN > Act) * 4 '!= kernels' > Conv > BN >  Act > Dropout > Add > Activation -
-                            \___________________> Conv > BN >____________________________________/
+        Structure: Input |> Conv > BN > Act > (Conv > BN > Act) * 4 '!= kernels' > Conv > BN > Act > Dropout > Add > Act
+                            \___________________> Conv > BN >_________________________________/
         :param filter_num: base number of used filters.
         :param dropout_rate: used dropout rate. A 0 value means no dropout.
         :param stride: applied downsampling stride.
@@ -608,7 +612,7 @@ class BottleNeck_v3(tf.keras.layers.Layer):
         :param kernel_regularizer: regularizer that applies a L2 regularization penalty of the given value.
         :param mult_factor: middle filter division factor
         """
-        super(BottleNeck_v3, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.activation = activation
         self.filter_num = filter_num
         self.dropout_rate = dropout_rate
@@ -789,7 +793,7 @@ class SqueezeExcitation(tf.keras.layers.Layer):
         allowed.
       **kwargs: Additional keyword arguments to be passed.
     """
-    super(SqueezeExcitation, self).__init__(**kwargs)
+    super().__init__(**kwargs)
 
     self._in_filters = in_filters
     self._out_filters = out_filters
@@ -841,7 +845,7 @@ class SqueezeExcitation(tf.keras.layers.Layer):
         kernel_regularizer=self._kernel_regularizer,
         bias_regularizer=self._bias_regularizer)
 
-    super(SqueezeExcitation, self).build(input_shape)
+    super().build(input_shape)
 
   def get_config(self):
     config = {
@@ -857,7 +861,7 @@ class SqueezeExcitation(tf.keras.layers.Layer):
         'gating_activation': self._gating_activation,
         'round_down_protect': self._round_down_protect,
     }
-    base_config = super(SqueezeExcitation, self).get_config()
+    base_config = super().get_config()
     return dict(list(base_config.items()) + list(config.items()))
 
   def call(self, inputs):

@@ -19,7 +19,8 @@ def tversky_metric(y_true, y_pred, alpha: float = 0.3, beta: float = 0.7, eps: f
     alpha = beta = 1 => tanimoto coeff
     alpha + beta = 1 => F beta coeff
 
-    :param y_true: Ground truth values. shape = `[batch_size, d0, .. dN]`, except sparse loss functions such as sparse categorical crossentropy where shape = `[batch_size, d0, .. dN-1]`
+    :param y_true: Ground truth values. shape = `[batch_size, d0, .. dN]`, except sparse loss functions such as 
+                        sparse categorical crossentropy where shape = `[batch_size, d0, .. dN-1]`
     :param y_pred: The predicted values. shape = `[batch_size, d0, .. dN]`
     :param eps: numeric stability
     :param beta: weight for the false negatives
@@ -58,7 +59,8 @@ def dice_coef_multilabel_metric(y_true, y_pred, alpha: float = 0.5, beta: float 
                                 axis=(0, 1, 2, 3)):
     """
     Dice coefficient multi label
-    :param y_true: Ground truth values. shape = `[batch_size, d0, .. dN]`, except sparse loss functions such as sparse categorical crossentropy where shape = `[batch_size, d0, .. dN-1]`
+    :param y_true: Ground truth values. shape = `[batch_size, d0, .. dN]`, except sparse loss functions such as 
+                    sparse categorical crossentropy where shape = `[batch_size, d0, .. dN-1]`
     :param y_pred: The predicted values. shape = `[batch_size, d0, .. dN]`
     :param alpha: 0.5 for dice coefficient
     :param beta: 0.5 for dice coefficient
@@ -114,7 +116,8 @@ def jaccard_metric(y_true, y_pred, axis=(1, 2, 3, 4), eps: float = 1e-6):
 
     Implemented according to https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4533825/#Equ7
 
-    :param y_true: Ground truth values. shape = `[batch_size, d0, .. dN]`, except sparse loss functions such as sparse categorical crossentropy where shape = `[batch_size, d0, .. dN-1]`
+    :param y_true: Ground truth values. shape = `[batch_size, d0, .. dN]`, except sparse loss functions such as sparse 
+                    categorical crossentropy where shape = `[batch_size, d0, .. dN-1]`
     :param y_pred: The predicted values. shape = `[batch_size, d0, .. dN]`
     :param axis: reduction axes
     :param eps: numerical stability
@@ -165,7 +168,8 @@ def per_channel_dice_loss(x, y, **kwargs):
 
 def mixed_loss(cce=.4, dice=0.6):
     def loss(x, y, **kwargs):
-        return tf.cast(dice*per_channel_dice_loss(x, y, **kwargs), "float64") + tf.cast(cce*tf.keras.losses.categorical_crossentropy(x, y, **kwargs), "float64")
+        return tf.cast(dice*per_channel_dice_loss(x, y, **kwargs), "float64") + \
+               tf.cast(cce*tf.keras.losses.categorical_crossentropy(x, y, **kwargs), "float64")
     return loss
 
 

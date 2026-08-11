@@ -2,7 +2,6 @@
 Created on Feb 12 2021
 @author: met
 """
-from re import X
 import tensorflow as tf
 import tensorflow_addons as tfa
 
@@ -26,7 +25,7 @@ class BottleNeck(tf.keras.layers.Layer):
         :param kernel_regularizer: regularizer that applies a L2 regularization penalty of the given value.
         :param mult_factor: middle filter multiplicative factor
         """
-        super(BottleNeck, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.activation = activation
         self.filter_num = filter_num
         self.dropout_rate = dropout_rate
@@ -136,7 +135,7 @@ class Plain(tf.keras.layers.Layer):
         :param kernel_regularizer: regularizer that applies a L2 regularization penalty of the given value.
         :param mult_factor: middle filter multiplicative factor
         """
-        super(Plain, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.activation = activation
         self.filter_num = filter_num
         self.dropout_rate = dropout_rate
@@ -148,7 +147,7 @@ class Plain(tf.keras.layers.Layer):
 
         # Define conv layers with Convs, BN, and activation
         self.convs = tf.keras.Sequential()
-        for i in range(self.n_conv_row):
+        for _ in range(self.n_conv_row):
             self.convs.add(tf.keras.layers.Conv3D(filters=filter_num * self.mult_factor,  # Conv
                                                   kernel_size=(3, 3, 3),
                                                   strides=1,
@@ -214,7 +213,7 @@ class UpBottleNeck(tf.keras.layers.Layer):
         :param kernel_regularizer: regularizer that applies a L2 regularization penalty of the given value.
         :param mult_factor: middle filter multiplicative factor
         """
-        super(UpBottleNeck, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.activation = activation
         self.filter_num = filter_num
         self.dropout_rate = dropout_rate
@@ -322,7 +321,7 @@ class UpPlain(tf.keras.layers.Layer):
         :param kernel_regularizer: regularizer that applies a L2 regularization penalty of the given value.
         :param mult_factor: middle filter multiplicative factor
         """
-        super(UpPlain, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.activation = activation
         self.filter_num = filter_num
         self.dropout_rate = dropout_rate
@@ -334,7 +333,7 @@ class UpPlain(tf.keras.layers.Layer):
 
         # Define conv layers with Convs, BN, and activation
         self.convs = tf.keras.Sequential()
-        for i in range(self.n_conv_row):
+        for _ in range(self.n_conv_row):
             self.convs.add(tf.keras.layers.Conv3D(filters=filter_num * self.mult_factor,  # Conv
                                                   kernel_size=(3, 3, 3),
                                                   strides=1,

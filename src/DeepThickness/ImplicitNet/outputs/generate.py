@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Created on Monday - October 10 2022, 15:36:49
 
@@ -14,19 +13,25 @@ Main Script for testing after training. Also contains modular functions used in 
 
 import os
 import sys
-from concurrent.futures import ProcessPoolExecutor, Future, as_completed
-from tqdm import tqdm
-import numpy as np
-from loguru import logger
 import time
+from concurrent.futures import Future, ProcessPoolExecutor, as_completed
 from os.path import join as opj
+
+import numpy as np
 import tensorflow as tf
+from loguru import logger
+from tqdm import tqdm
 
 sys.path.append("/NeuroMorph/src/")
 
-from DeepThickness.mesh_manager import CorticalSurfaceMap
 from DeepThickness.ImplicitNet.config import Config
-from DeepThickness.ImplicitNet.outputs.export import save_predicted_meshes, save_subject_volumes, save_metadata, write_results_csv
+from DeepThickness.ImplicitNet.outputs.export import (
+    save_metadata,
+    save_predicted_meshes,
+    save_subject_volumes,
+    write_results_csv,
+)
+from DeepThickness.mesh_manager import CorticalSurfaceMap
 
 
 def merge_Cth(subject_info):
@@ -45,7 +50,7 @@ def merge_Cth(subject_info):
     Returns:
         dict: Updated dictionary with 'Mean_Predicted_CTh' added only when both exist.
     """
-    for subject_name, subject_data in subject_info.items():
+    for _, subject_data in subject_info.items():
         if "results" not in subject_data:
             continue
             
@@ -370,7 +375,8 @@ def parallel_process_ds(
     subject_idx = 0
     segmentation_mask_i = None
 
-    executor = ProcessPoolExecutor(max_workers=config.testing.limit_cpu_count) if device == "gpu" else SequentialExecutor()
+    executor = ProcessPoolExecutor(max_workers=config.testing.limit_cpu_count) if device == "gpu" \
+        else SequentialExecutor()
 
     with executor as mesh_executor:
         for X_test in tqdm(ds_test,
@@ -383,7 +389,8 @@ def parallel_process_ds(
             subject_name = subject_names[subject_idx]
             subj_dir = subject_save_data[subject_name]["subj_dir"]
             subject_info[subject_name] = {"index": subject_idx, "subj_dir_i": subj_dir}
-            subject_save = subject_idx < config.input_output.no_of_save_outputs or config.input_output.no_of_save_outputs == -1
+            subject_save = subject_idx < config.input_output.no_of_save_outputs or \
+                config.input_output.no_of_save_outputs == -1
 
             predictions = single_prediction(
                 model, X_test, config, check_dir=os.path.join(subjects_out_dir, subject_name)

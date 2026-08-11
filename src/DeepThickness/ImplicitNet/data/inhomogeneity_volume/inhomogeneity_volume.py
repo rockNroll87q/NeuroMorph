@@ -12,21 +12,11 @@ Code to create 1-D, 2-D, and 3-D inhomogeneity augmented data.
 ################################################################################################################
 ## Imports
 
-from __future__ import division, print_function
 
-import os, sys
-import argparse
-import nibabel as nib 
-
+import nibabel as nib
 import numpy as np
-import matplotlib.pyplot as plt 
-import matplotlib.patches as patches
-
-from scipy.stats import multivariate_normal
-from scipy import stats
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
-from matplotlib import cm
-
+from scipy.stats import multivariate_normal
 
 ################################################################################################################
 ## Paths and Constants
@@ -37,7 +27,8 @@ from matplotlib import cm
 ################################################################################################################
 ## Main
 
-T1 = nib.load('/analyse/Project0235/segmentator/data/multi_site_data/T1/1000_FCP_ABIDE_Olin_sub-0050121_T1w_256iso.nii.gz')
+path = "/analyse/Project0235/segmentator/data/multi_site_data/T1/1000_FCP_ABIDE_Olin_sub-0050121_T1w_256iso.nii.gz"
+T1 = nib.load(path)
 #GT = nib.load(Path_in_GT)
 
 # load the volume

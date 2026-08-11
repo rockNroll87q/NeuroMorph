@@ -1,21 +1,24 @@
 import os
 from pathlib import Path
-import sys
-import tensorflow as tf
-from tensorflow.keras.models import load_model  # type: ignore
-from tensorflow.keras.models import Model
-import pandas as pd
-from loguru import logger
-import numpy as np
-import scipy
+
 import nibabel as nib
+import numpy as np
+import pandas as pd
+import scipy
+import tensorflow as tf
+from loguru import logger
 from nibabel.processing import conform
+from tensorflow.keras.models import (
+    Model,
+    load_model,  # type: ignore
+)
+
 from LOD_Brain.src.LOD_Brain.model import layers, losses
 
 
 class GaussianSmoothing3D(tf.keras.layers.Layer):
     def __init__(self, sigma=0.5, kernel_size=5, **kwargs):
-        super(GaussianSmoothing3D, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.sigma = sigma
         self.kernel_size = kernel_size
 
@@ -224,12 +227,7 @@ def pad_volume(vol_in, pad_size=(256, 256, 256)):
 
 def conform_image(input_data, out_shape=None, out_orientation=None, out_resolution=None):
 
-    if isinstance(input_data, nib.nifti1.Nifti1Image):
-        i_X = input_data
-    else:
-        # Load the volume
-        i_X = nib.load(input_data)
-    
+    i_X = input_data if isinstance(input_data, nib.nifti1.Nifti1Image) else nib.load(input_data)
 
     out_shape = (256,256,256) if out_shape is None else out_shape
     out_orientation = ("L","I","A") if out_orientation is None else out_orientation

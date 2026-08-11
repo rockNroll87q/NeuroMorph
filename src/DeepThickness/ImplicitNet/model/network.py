@@ -8,29 +8,27 @@ Script to build the native Implicitnet U-net model or shallow U-net model.
 """
 
 import sys
+
 sys.path.insert(0, "src/")
-from os.path import join as opj
 from pathlib import Path
+
 import tensorflow as tf
-import keras
 from loguru import logger
+from tensorflow.keras.layers import Concatenate, Input, Lambda  # type: ignore
 from tensorflow.keras.models import Model  # type: ignore
-from tensorflow.keras.layers import Input, Concatenate, Lambda  # type: ignore
+
+import DeepThickness.ImplicitNet.model.activations as activations
 from DeepThickness.ImplicitNet.config import Config
+from DeepThickness.ImplicitNet.model import losses
 from DeepThickness.ImplicitNet.model.layers import (
     BottleNeck,
-    UpBottleNeck,
     Plain,
-    UpPlain,
     SqueezeExcitation,
-)
-from DeepThickness.ImplicitNet.model import losses
-from LOD_Brain.src.deepthickness_tools import (
-    load_lodbrain_model,
-    tf_lod_post_processing
+    UpBottleNeck,
+    UpPlain,
 )
 from DeepThickness.python_utils import load_config_from_yaml
-import DeepThickness.ImplicitNet.model.activations as activations
+from LOD_Brain.src.deepthickness_tools import load_lodbrain_model, tf_lod_post_processing
 
 
 def build_unet_model(config: Config) -> Model:
@@ -81,7 +79,7 @@ def build_unet_model(config: Config) -> Model:
                 name=f"enc_{4 * num_filters[0]}_{r}",
             )(x)
         skip_x.append(x)
-        for i, f in enumerate(num_filters[1:-1]):
+        for _, f in enumerate(num_filters[1:-1]):
             for r in range(config.network.n_identity_layers):
                 x = conv_block["Encoder"](
                     filter_num=f,

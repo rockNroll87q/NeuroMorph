@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 Created on Monday - October 10 2022, 15:36:49
 
@@ -12,6 +11,7 @@ Created on Monday - October 10 2022, 15:36:49
 Script for functions related to saving outputs.
 """
 
+import contextlib
 import os
 
 import nibabel as nib
@@ -270,8 +270,8 @@ def save_subject_volumes(
         if selected_type:
             # Level set
             if config.input_output.out_level_set: 
-                assert ((config.input_output.out_pial_surface_level_set 
-                or config.input_output.out_wm_surface_level_set)), "Level set output is not flagged in config"
+                assert (config.input_output.out_pial_surface_level_set 
+                or config.input_output.out_wm_surface_level_set), "Level set output is not flagged in config"
                 
                 if isinstance(pred_level_set, np.ndarray):
                     pred_nifti = nib.Nifti1Image(pred_level_set, conform_affine, native_header)
@@ -279,8 +279,8 @@ def save_subject_volumes(
 
             # Distance set
             if config.input_output.out_distance_set: 
-                assert ((config.input_output.out_pial_surface_distance_set 
-                or config.input_output.out_wm_surface_distance_set)), "Distance set output is not flagged in config"
+                assert (config.input_output.out_pial_surface_distance_set 
+                or config.input_output.out_wm_surface_distance_set), "Distance set output is not flagged in config"
                 
                 if isinstance(pred_distance_set, np.ndarray):
                     nib.save(
@@ -315,10 +315,8 @@ def write_results_csv(subject_info, dataset, path_out_folder):
     records = [{"Subject": subj, **flatten_dict(info)} for subj, info in subject_info.items()]
     ds_key = "dataset_test_type"
     ds = dataset.get(ds_key, "unknown")
-    try: 
-        ds = ds[0]  
-    except Exception: 
-        pass  # if it's already a scalar, do nothing
+    with contextlib.suppress(Exception):
+        ds = ds[0]  # if it's already a scalar, do nothing
 
     all_results_df = pd.DataFrame(records).assign(dataset_type=ds)
     all_results_df.to_csv(f"{path_out_folder}/subjects_morphology.csv", index=False)

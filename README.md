@@ -4,7 +4,7 @@
 
 
 📄 [Paper (medRxiv)](placeholder) &nbsp;|&nbsp; 
-🖥️ [Website](https://github.com/rockNroll87q/NeuroMorph) &nbsp;|&nbsp; 
+🖥️ [Website](https://rocknroll87q.github.io/neuromorph/) &nbsp;|&nbsp; 
 📓 [Inference Guide](./Inference_Guide.ipynb) &nbsp;|&nbsp;
 ⚙️ [Installation Guide](./docs/installation.md) &nbsp;|&nbsp;
 🐳 [Docker](https://hub.docker.com/r/rocknroll87q/neuromorph) &nbsp;|&nbsp; 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-"
 """
 Authors:
 * Connor Dalby, University of Glasgow
@@ -11,6 +10,7 @@ Various loss and metrics functions to be passed to the model for training and ev
 import tensorflow as tf
 from tensorflow.keras import backend as K
 
+
 def non_capped_mae(cap_high = 5, cap_low = -5):
     """
     This metric compute the mean absolute error just in voxel where y_true is
@@ -21,11 +21,12 @@ def non_capped_mae(cap_high = 5, cap_low = -5):
         # Flatten just for simplification
         y_true = K.flatten(y_true)
         y_pred = K.flatten(y_pred)
-        indices = K.flatten(tf.where(tf.logical_and(tf.not_equal(y_true, tf.ones_like(y_true)*cap_high), tf.not_equal(y_true, tf.ones_like(y_true)*cap_low))))
+        indices = K.flatten(tf.where(tf.logical_and(tf.not_equal(y_true, tf.ones_like(y_true)*cap_high), \
+            tf.not_equal(y_true, tf.ones_like(y_true)*cap_low))))
         return tf.keras.metrics.mean_absolute_error(tf.gather(y_true, indices), tf.gather(y_pred, indices))
     return non_cap_mae
 
-def weighted_mae(cap_values:list=[0.], cap_weight = 0.03, non_cap_weight = 1.0):
+def weighted_mae(cap_values:list=None, cap_weight = 0.03, non_cap_weight = 1.0):
     """
     This loss function gives `non_cap_weight` to errors where the voxels in
     `y_true` are different then cap_values and `cap_weight` to errors of the
@@ -44,6 +45,8 @@ def weighted_mae(cap_values:list=[0.], cap_weight = 0.03, non_cap_weight = 1.0):
         Is the weight you want to assign to the non capped values in the
         weighted loss. Typically non_cap_weight >> cap_weight
     """
+    if cap_values is None:
+        cap_values = [0.]
     def weighted_mae(y_true, y_pred):
         # Cast y_true and y_pred to float32
         y_true = tf.cast(K.flatten(y_true), tf.float32)
@@ -52,14 +55,16 @@ def weighted_mae(cap_values:list=[0.], cap_weight = 0.03, non_cap_weight = 1.0):
         # y_true_capped is a mask where it is True where there is a cap value, False otherwise
         y_true_capped = tf.zeros_like(y_true, dtype=bool)
         for cap_value in cap_values:
-            y_true_capped = tf.math.logical_or(y_true_capped, y_true == tf.cast(tf.ones_like(y_true)*cap_value, tf.float32))
+            y_true_capped = tf.math.logical_or(y_true_capped, y_true == \
+                tf.cast(tf.ones_like(y_true)*cap_value, tf.float32))
 
         size = tf.cast(tf.size(y_true), dtype=tf.float32)
         number_of_capped_values = tf.math.count_nonzero(y_true_capped, dtype=tf.float32)
         number_of_non_capped_values = size - number_of_capped_values
 
         # Ensure weights are in float32
-        weights = K.switch(y_true_capped, tf.cast(tf.ones_like(y_true)*cap_weight, tf.float32), tf.cast(tf.ones_like(y_true)*non_cap_weight, tf.float32))
+        weights = K.switch(y_true_capped, tf.cast(tf.ones_like(y_true)*cap_weight, tf.float32),
+                           tf.cast(tf.ones_like(y_true)*non_cap_weight, tf.float32))
 
         loss = tf.keras.losses.MeanAbsoluteError()
         # 'scale' is used to have as loss the typical weighted average formula
@@ -67,7 +72,7 @@ def weighted_mae(cap_values:list=[0.], cap_weight = 0.03, non_cap_weight = 1.0):
         return scale * loss(tf.reshape(y_true, (-1, 1)), tf.reshape(y_pred, (-1, 1)), sample_weight=weights)
     return weighted_mae
 
-def weighted_mse(cap_values:list=[0.], cap_weight = 0.03, non_cap_weight = 1.):
+def weighted_mse(cap_values=None, cap_weight = 0.03, non_cap_weight = 1.):
     """
     This loss function gives `non_cap_weight` to errors where the voxels in
     `y_true` are different then cap_values and `cap_weight` to errors of the
@@ -86,6 +91,8 @@ def weighted_mse(cap_values:list=[0.], cap_weight = 0.03, non_cap_weight = 1.):
         Is the weight you want to assign to the non capped values in the
         weighted loss. Typically non_cap_weight >> cap_weight
     """
+    if cap_values is None:
+        cap_values = [0.]
     def weighted_mse(y_true, y_pred):
         y_true = K.flatten(y_true)
         y_pred = K.flatten(y_pred)
@@ -103,7 +110,7 @@ def weighted_mse(cap_values:list=[0.], cap_weight = 0.03, non_cap_weight = 1.):
         return scale * loss(tf.reshape(y_true, (-1, 1)), tf.reshape(y_pred, (-1, 1)), sample_weight=weights)
     return weighted_mse
 
-def weighted_huber(cap_values:list=[0.], cap_weight = 0.03, non_cap_weight = 1.):
+def weighted_huber(cap_values=None, cap_weight = 0.03, non_cap_weight = 1.):
     """
     This loss function gives `non_cap_weight` to errors where the voxels in
     `y_true` are different then cap_values and `cap_weight` to errors of the
@@ -122,6 +129,9 @@ def weighted_huber(cap_values:list=[0.], cap_weight = 0.03, non_cap_weight = 1.)
         Is the weight you want to assign to the non capped values in the
         weighted loss. Typically non_cap_weight >> cap_weight
     """
+    if cap_values is None:
+        cap_values = [0.]
+        
     def weighted_huber(y_true, y_pred):
         y_true = K.flatten(y_true)
         y_pred = K.flatten(y_pred)
@@ -164,7 +174,7 @@ def bounded_mae(cap_high=1, cap_low=0):
     
     return filtered_mae
  
-def ranged_weighted_mae(focus_range=[0.0, 1.0], gradient_type='slope', max_weight=1.0, kl_weight=0.0):
+def ranged_weighted_mae(focus_range=None, gradient_type='slope', max_weight=1.0, kl_weight=0.0):
     """
     Computes a weighted MAE with a custom weighting scheme:
     - Base weights are determined by 1 - |y_true|/max(|y_true|)
@@ -172,6 +182,8 @@ def ranged_weighted_mae(focus_range=[0.0, 1.0], gradient_type='slope', max_weigh
     - Voxels within focus_range are given a weight of 1.0.
     - If gradient_type == 'step', certain voxels get a fixed weight of 0.5.
     """
+    if focus_range is None:
+        focus_range = [0.0, 1.0]
 
     def weighted_mae(y_true, y_pred):
         # Flatten and cast to float32

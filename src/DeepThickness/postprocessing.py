@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 @authors:
 * Connor Dalby, University of Glasgow
 * Damiano Ferrari, University of Brescia
 * Michele Svanera, University of Glasgow
 
-Postprocessing class to manage all operations/functions relating to fixing any issues with the cortical surface maps/meshes.
+Postprocessing class to manage all operations/functions relating to fixing any issues with the 
+cortical surface maps/meshes.
 """
 import pymeshlab as pml
+
 
 class Post_Processing:
     """

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 @authors:
 * Connor Dalby, University of Glasgow
@@ -13,20 +12,18 @@ needed for inference
 
 """
 
-from logging import config
-from pathlib import Path
 from os.path import join as opj
+
 import nibabel as nib
 import numpy as np
-from scipy import stats
 import pandas as pd
 import tensorflow as tf
 from loguru import logger
-from DeepThickness import python_utils
+from scipy import stats
 
-from DeepThickness.ImplicitNet.config import Config, InputOutputConfig, DataConfig
+from DeepThickness import python_utils
+from DeepThickness.ImplicitNet.config import Config, DataConfig, InputOutputConfig
 from LOD_Brain.src.deepthickness_tools import conform_image
-from collections import Counter
 
 
 def load_csv_with_fullpaths(config_io_dict: InputOutputConfig, config_data_dict: DataConfig):
@@ -135,7 +132,8 @@ def prepareDataset(config: Config):
     # Import all the volume' filenames from the csv
     X_test_paths = load_csv_with_fullpaths(config.input_output.dict(), config_data_dict)
     
-    input_shape, input_config, output_shape, output_config = python_utils.get_string_io_configuration(config.input_output)
+    input_shape, input_config, output_shape, output_config = \
+        python_utils.get_string_io_configuration(config.input_output)
 
     # Update 'experiment_dict' 
     experiment_dict = {}
@@ -160,7 +158,8 @@ def prepareDataset(config: Config):
     dataset['X_test_paths'] = X_test_paths
 
     lh_pial_surface, rh_pial_surface, lh_wm_surface, rh_wm_surface, \
-    lh_thickness, rh_thickness, orig, aparc, dataset_type, database_name, subject_name = load_mesh_data_set_with_fullpath(config_data_dict)
+    lh_thickness, rh_thickness, orig, aparc, dataset_type, database_name, subject_name = \
+        load_mesh_data_set_with_fullpath(config_data_dict)
     dataset["lh_pial_surface_test_paths"] = lh_pial_surface
     dataset["rh_pial_surface_test_paths"] = rh_pial_surface
     dataset["lh_wm_surface_test_paths"] = lh_wm_surface
@@ -187,7 +186,8 @@ def load_input_volumes(paths, input_shape):
 
     X = np.empty(input_shape, dtype=np.float32)
     for channel, path in enumerate(paths):
-        X[:, :, :, channel] = np.nan_to_num(np.array(nib.load(path.decode('UTF-8')).dataobj, dtype=np.float32), nan=0, posinf=0, neginf=0)
+        X[:, :, :, channel] = np.nan_to_num(np.array(nib.load(path.decode('UTF-8')).dataobj, \
+            dtype=np.float32), nan=0, posinf=0, neginf=0)
     return X
 
 def load_input_and_conform_volume(paths, input_shape):
@@ -209,13 +209,8 @@ def load_input_and_conform_volume(paths, input_shape):
         # decode from bytes to a Python string filename
         fname = path.decode('UTF-8')
         
-        if channel == 0:
-            # your preprocessing returns (nib_image, dict)
-            img = conform_image(input_data=fname)
-
-        else:
-            # other channels, just load normally
-            img = nib.load(fname)
+        # preprocessing returns (nib_image, dict) for channel 0, load normally for others
+        img = conform_image(input_data=fname) if channel == 0 else nib.load(fname)
         
         # extract the raw data, zero out nans & infs
         data = np.array(img.dataobj, dtype=np.float32)
@@ -231,7 +226,8 @@ def load_output_volumes(paths):
     :return: tuple of float32 numpy arrays, one per path, each with NaN and
         inf values replaced with zeros
     """
-    return tuple([np.nan_to_num(np.array(nib.load(path.decode('UTF-8')).dataobj, dtype=np.float32), nan=0, posinf=0, neginf=0) for path in paths])
+    return tuple([np.nan_to_num(np.array(nib.load(path.decode('UTF-8')).dataobj, \
+        dtype=np.float32), nan=0, posinf=0, neginf=0) for path in paths])
 
 def tf_zscore(x:np.ndarray, in_T1) -> np.ndarray:
     """ 
@@ -267,8 +263,7 @@ def createDatasetTF(X_paths, config:Config):
         """
         This generator simply reads the input X_paths and yields them one at a time.
         """
-        for X in X_paths:
-            yield X
+        yield from X_paths
 
     def set_input_shape(x):
         """
@@ -285,7 +280,8 @@ def createDatasetTF(X_paths, config:Config):
 
 
     # Load volumes from paths
-    input_dataset = input_dataset.map(lambda x: tf.numpy_function(func=load_input_and_conform_volume, inp=[x, input_shape], Tout=(tf.float32)), num_parallel_calls=tf.data.AUTOTUNE)
+    input_dataset = input_dataset.map(lambda x: tf.numpy_function(func=load_input_and_conform_volume, \
+        inp=[x, input_shape], Tout=(tf.float32)), num_parallel_calls=tf.data.AUTOTUNE)
     input_dataset = input_dataset.map(set_input_shape, num_parallel_calls=tf.data.AUTOTUNE)
     
     return input_dataset

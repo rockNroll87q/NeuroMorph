@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 @authors:
 * Connor Dalby, University of Glasgow
@@ -10,18 +9,20 @@ CorticalSurfaceMap class to manage all operations/functions relating to the cort
 """
 
 
-import numpy as np
-import nibabel as nib
-import pymeshlab as pml
 import os
+from pathlib import Path
+
+import fast_simplification
+import nibabel as nib
+import numpy as np
+import pymeshlab as pml
+from loguru import logger
 from scipy.interpolate import RegularGridInterpolator
 from scipy.spatial import KDTree
-from pathlib import Path
-from loguru import logger
-import fast_simplification
 from skimage.measure import marching_cubes
 
 from DeepThickness.postprocessing import Post_Processing
+
 
 class CorticalSurfaceMap:
     """
@@ -49,15 +50,18 @@ class CorticalSurfaceMap:
         return cls(mesh.vertex_matrix(), mesh.face_matrix(), mesh.vertex_scalar_array())
 
     @classmethod
-    def from_volumetric_data(cls, level_set:np.ndarray, distance_set:np.ndarray, allow_degenerate=False, smooth_thickness=False, 
-                             mc_level = 1.0, norm_mult = 1.0, apply_post_processing=True, mesh_decimation_target=75000, subject_name=None) -> 'CorticalSurfaceMap':
+    def from_volumetric_data(cls, level_set:np.ndarray, distance_set:np.ndarray, allow_degenerate=False, 
+                             smooth_thickness=False, mc_level = 1.0, norm_mult = 1.0, apply_post_processing=True, 
+                             mesh_decimation_target=75000, subject_name=None) -> 'CorticalSurfaceMap':
         """
-        Given the level set of a surface and the corresponding distance array (it could be both a distance set or a level set since it takes the absolute value), 
-        returns the surface (vertices and faces) and the thickness associated to each vertex. MC level controls the isovalue threshold at which a surface boundary
-        is set in the MC algorithm (how much to cut into the surface). If altering the mc_level, we 're-inflate' the mesh by moving all faces along the norms by
-        a fixed value (norm_mult). We remove any isolate pieces and decimate the mesh to a fixed target number of vertices. A series of smoothing can be applied 
-        as post processing (recommended) to improve mesh quality and reduce intersections. Finally, we interpolate the vertices with the distance set to generate a CTh as mesh
-        colour overlay. If smooth_thickness is True, it smooths these vertices values. 
+        Given the level set of a surface and the corresponding distance array (it could be both a distance set or a 
+        level set since it takes the absolute value), returns the surface (vertices and faces) and the thickness 
+        associated to each vertex. MC level controls the isovalue threshold at which a surface boundary is set in the MC
+        algorithm (how much to cut into the surface). If altering the mc_level, we 're-inflate' the mesh by moving all 
+        faces along the norms by a fixed value (norm_mult). We remove any isolate pieces and decimate the mesh to a 
+        fixed target number of vertices. A series of smoothing can be applied as post processing (recommended) to 
+        improve mesh quality and reduce intersections. Finally, we interpolate the vertices with the distance set 
+        to generate a CTh as mesh colour overlay. If smooth_thickness is True, it smooths these vertices values.
         
         Args:
             level_set: Volumetric level-set used to extract the isosurface.
@@ -98,7 +102,8 @@ class CorticalSurfaceMap:
         
         if apply_post_processing:    
             """
-            To improve the quality of the mesh and reduce the number of intersections, we can optionally apply post processing to the mesh.
+            To improve the quality of the mesh and reduce the number of intersections, we can optionally apply 
+            post processing to the mesh.
             This is acheived by applying:
             - Minor Taubin smoothing to the whole mesh 
             - Laplacian smoothing on intersecting faces
@@ -108,9 +113,9 @@ class CorticalSurfaceMap:
             modified_ms = Post_Processing(vertices = ct_map.vertices, faces = ct_map.faces)  
             modified_ms.apply_whole_mesh_taubin_smoothing()  # Apply whole mesh smoothing
             modified_ms.apply_laplacian_smoothing()  # Apply laplacian smoothing        
-            final_intersections =  modified_ms.count_intersections() # Set as final to skip Taubin if there are intersections at this point
+            final_intersections =  modified_ms.count_intersections() # final to skip Taubin if intersections here
             
-            for i in range(5):
+            for _ in range(5):
                 
                 if final_intersections == 0: # Exit loop if there are no intersections left
                     break
@@ -124,7 +129,8 @@ class CorticalSurfaceMap:
         
             
         # Interpolate the re-inflated mesh
-        ct_map.apply_from_distance_set(distance_set = distance_set, smooth_thickness = smooth_thickness, interpolation_method = 'linear')         
+        ct_map.apply_from_distance_set(distance_set = distance_set, smooth_thickness = smooth_thickness, 
+                                       interpolation_method = 'linear')         
 
         return ct_map
 
@@ -210,7 +216,8 @@ class CorticalSurfaceMap:
         absoulte value. If `smooth_thickness` is `True`, it smooths the vertices
         values.
         """
-        interp = RegularGridInterpolator((np.arange(distance_set.shape[0]), np.arange(distance_set.shape[1]), np.arange(distance_set.shape[2])),
+        interp = RegularGridInterpolator((np.arange(distance_set.shape[0]), np.arange(distance_set.shape[1]), 
+                                          np.arange(distance_set.shape[2])),
                                          np.abs(distance_set), method=interpolation_method,
                                          bounds_error=False, fill_value=0.0)
         self.vertices_values = interp(self.vertices)
@@ -253,8 +260,9 @@ class CorticalSurfaceMap:
             quality_mapper_path = (Path(__file__).resolve().parent / 'quality_mappers/').resolve()
             
         if not os.path.exists(quality_mapper_path):
-            logger.warning(f"Quality mapper path {quality_mapper_path} does not exist. Using default path /NeuroMorph/src/DeepThickness/quality_mappers/")
             quality_mapper_path = '/NeuroMorph/src/DeepThickness/quality_mappers/'
+            logger.warning(f"Quality mapper path {quality_mapper_path} does not exist. "
+                           f"Using default path {quality_mapper_path}.")
        
         assert output_path.endswith(".ply")
         assert quality_mapper is None or quality_mapper == "BR" or quality_mapper == "BGR"
@@ -266,7 +274,11 @@ class CorticalSurfaceMap:
             mesh_set.compute_color_by_function_per_vertex(x="128", y="128", z="128")
         else:
             tf_path = Path(quality_mapper_path)/f"{quality_mapper}.tf"
-            mesh_set.compute_color_from_scalar_using_transfer_function_per_vertex(minqualityval=minval, maxqualityval=maxval, tfslist="Custom Transfer Function File", csvfilename=str(tf_path))
+            mesh_set.compute_color_from_scalar_using_transfer_function_per_vertex(
+                minqualityval=minval, 
+                maxqualityval=maxval, 
+                tfslist="Custom Transfer Function File",
+                csvfilename=str(tf_path))
         mesh_set.save_current_mesh(output_path, binary=True)
 
     def save_as_freesurfer(self, out_surface_path:str, out_overlay_path=None):
@@ -307,11 +319,12 @@ class CorticalSurfaceMap:
     def fast_load_and_simplify_mesh(self, mesh_decimation_target=75000, subject_name=None):
         
         """
-        This method rapidly simplifies a mesh to a given vertex rought target and then selectively refines its largest faces to restore geometric detail. 
-        First, it iteratively applies a the fast decimation algorithm/paclage until the mesh has at most mesh_decimation_target vertices. 
-        It then computes the area of each face, picks the n largest ones, and inserts a new barycenter vertex into each—splitting each chosen triangle into three smaller triangles. 
-        Finally, it replaces the selected faces with these subdivided faces and updates self.vertices and self.faces, yielding a mesh that both meets the target vertex count and 
-        preserves important geometric features.
+        This method rapidly simplifies a mesh to a given vertex rought target and then selectively refines its largest 
+        First, it iteratively applies the fast decimation algorithm/package until the mesh has at most 
+        mesh_decimation_target vertices. It then computes the area of each face, picks the n largest ones, and inserts
+        a new barycenter vertex into each—splitting each chosen triangle into three smaller triangles. 
+        Finally, it replaces the selected faces with these subdivided faces and updates self.vertices and self.faces,
+        yielding a mesh that both meets the target vertex count and preserves important geometric features.
         
         Args:
             mesh_decimation_target: Desired vertex count after simplification and
@@ -324,24 +337,27 @@ class CorticalSurfaceMap:
         fast_target = mesh_decimation_target - 100
         
         if no_of_orig_vertices <= mesh_decimation_target:
-            logger.warning(f"Subject {subject_name}: Mesh already has {no_of_orig_vertices} vertices, which is less than or equal to the target of {mesh_decimation_target}. \
+            logger.warning(f"Subject {subject_name}: Mesh already has {no_of_orig_vertices} vertices, \
+                which is less than or equal to the target of {mesh_decimation_target}. \
                 Check T1w image and predicted levelset for potential issues.")
             return self
         
         while simplification_vertices_shape > mesh_decimation_target:
             # Use fast simplification to reduce the number of self.vertices and faces close to target
-            simplification_vertices, simplification_faces = fast_simplification.simplify(self.vertices, self.faces, 1-fast_target/no_of_orig_vertices,return_collapses=False)
+            simplification_vertices, simplification_faces = fast_simplification.simplify(self.vertices, self.faces, 
+                                                                                         1-fast_target/no_of_orig_vertices,return_collapses=False)
             simplification_vertices_shape = simplification_vertices.shape[0]
             fast_target -= 15
             
-        assert simplification_vertices_shape <= mesh_decimation_target, f"The fast decimation produced vertices ({simplification_vertices_shape}) greater than the target"
+        assert simplification_vertices_shape <= mesh_decimation_target, \
+            f"The fast decimation produced vertices ({simplification_vertices_shape}) greater than the target"
         n = mesh_decimation_target - simplification_vertices_shape
         
         # Use barycenter to subdivide faces
         # Extract the three vertices for each face using advanced indexing.
-        A = simplification_vertices[simplification_faces[:, 0]]  # Get the first vertex of each face; shape: (num_faces, 3)
-        B = simplification_vertices[simplification_faces[:, 1]]  # Get the second vertex of each face; shape: (num_faces, 3)
-        C = simplification_vertices[simplification_faces[:, 2]]  # Get the third vertex of each face; shape: (num_faces, 3)
+        A = simplification_vertices[simplification_faces[:, 0]] # Get first vertex of each face; shape: (num_faces, 3)
+        B = simplification_vertices[simplification_faces[:, 1]] # Get second vertex of each face; shape: (num_faces, 3)
+        C = simplification_vertices[simplification_faces[:, 2]] # Get third vertex of each face; shape: (num_faces, 3)
         
         # Compute two edge vectors for each face.
         edge1 = B - A  # Vector from vertex A to B; shape: (num_faces, 3)
@@ -364,7 +380,7 @@ class CorticalSurfaceMap:
         face_indices = np.asarray(face_indices)
         
         # 1. Extract the selected faces from simplification_faces (each face is a triplet of vertex indices)
-        selected_faces = simplification_faces[face_indices]  # shape: (k, 3), where k is the number of faces to subdivide
+        selected_faces = simplification_faces[face_indices] # shape: (k, 3), where k is the number of faces to subdivide
 
         # 2. Compute the barycenters for these faces in a vectorized way.
         # For each face, the barycenter is the mean of its three vertices.
@@ -404,7 +420,8 @@ class CorticalSurfaceMap:
         faces_new = np.vstack([F_remaining, new_faces])        
 
         # Logging the result of decimation
-        assert vertices_new.shape[0] == mesh_decimation_target, f'Warning: {subject_name} decimation failed to reach mesh_decimation_target. Decimated to {vertices_new.shape[0]} vertices from {no_of_orig_vertices}.'
+        assert vertices_new.shape[0] == mesh_decimation_target, f'Warning: {subject_name} decimation failed to reach \
+            mesh_decimation_target. Decimated to {vertices_new.shape[0]} vertices from {no_of_orig_vertices}.'
                 
         self.vertices = vertices_new  # Update vertices with simplified vertices
         self.faces = faces_new             # Update faces with simplified faces

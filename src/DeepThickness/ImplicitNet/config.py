@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """
 @authors:
 * Connor Dalby, University of Glasgow
@@ -11,10 +10,11 @@ A series of configuration classes for the ImplicitNet model.training and testing
 """
 
 #from typing import List
-from pydantic import BaseModel, validator, Field, PositiveInt, PositiveFloat, NonNegativeInt, NonNegativeFloat
-import tensorflow as tf
-import numpy as np
 from typing import Optional
+
+import numpy as np
+from pydantic import BaseModel, Field, NonNegativeFloat, NonNegativeInt, PositiveFloat, PositiveInt, validator
+
 
 class ExperimentConfig(BaseModel):
     name: str = Field("NeuroMorph", title="Experiment base name")
@@ -22,57 +22,61 @@ class ExperimentConfig(BaseModel):
 
 class DataConfig(BaseModel):
     output_dir: str = Field('/NeuroMorph/out/', title="Dir to save the outputs")
-    inference_mode: str = Field('T1w', title="What type of inference to perform. If input is T1w only (e.g. file path , dir path or csv of paths), use 'T1w'. If input is a csv of paths to T1w, GM, WM and Seg, use 'all_inputs'")
-    vol_in: Optional[str]  = Field(None, title="Path to a single T1w volume or a folder containing T1w volumes for inference")
-    file_identifier : str = Field(".nii.gz", title="A substring that can be used to find the T1w files when recursively searching a data.vol_in directory")
+    inference_mode: str = Field('T1w', title="What type of inference to perform. \
+        If input is T1w only (e.g. file path , dir path or csv of paths), use 'T1w'. \
+        If input is a csv of paths to T1w, GM, WM and Seg, use 'all_inputs'")
+    vol_in: Optional[str]  = Field(None, title="Path to a single T1w volume or a folder containing T1w volumes")
+    file_identifier : str = Field(".nii.gz", title="A substring for recursive T1w filename search in data.vol_in dir")
     Path_in_csv: str = Field('/NeuroMorph/csv/', title="csv path")
     Filename_csv: str = Field('LOD_Brain_dataset_valid_external.csv', title="csv filename")
 
 class InputOutputConfig(BaseModel):
     # Possible input combination
     in_T1: bool = Field(True, title="Whether to include the T1 as an input of the network")
-    in_gm_probability_map: bool = Field(False, title="Whether to include the gray matter probability map as an input of the network")
-    in_wm_probability_map: bool = Field(False, title="Whether to include the white matter probability map as an input of the network")
+    in_gm_probability_map: bool = Field(False, title="Whether to include the GM probab map as an input of the network")
+    in_wm_probability_map: bool = Field(False, title="Whether to include the WM probab map as an input of the network")
     in_segmentation: bool = Field(False, title="Whether to include the segmentation as an input of the network")
     
     # Method outputs
-    no_of_save_outputs: Optional[int] = Field(1, title = "The number of subject to save outputs in testing. Set to 0 if only csv of results is desired.")
-    out_T1: bool = Field(True, title="Whether to include the conformed T1w volume used for the model as an output.")
-    out_segmentation: bool = Field(True, title="Whether to include the 8 mask segmentation volume from LODBrain as an output. Needed for volume metrics")
-    out_surface_type: str = Field("both", title="Whether to include the pial and white matter surface meshes as an output. Options are 'pial', 'wm' or 'both'")
-    out_surface_mesh: bool = Field(True, title="Whether to include the selected type surface mesh (with CTh overlay) as an output")
-    out_curvature_mesh: bool = Field(False, title="Whether to include the curvature surface mesh as an output")
-    out_t1w_overlay_mesh: bool = Field(False, title="Whether to include the T1w intensity overlay surface mesh as an output")
-    out_surface_fs: bool = Field(True, title="Whether to include the FreeSurfer surface files as an output")
-    out_level_set: bool = Field(False, title="Whether to include the selected type level set volumes as an output")
-    out_distance_set: bool = Field(False, title="Whether to include the selected type distance set volumes as an output")
+    no_of_save_outputs: Optional[int] = Field(1, title = "The number of subject to save outputs in testing.")
+    out_T1: bool = Field(True, title="Whether to output the conformed T1w volume used for the model.")
+    out_segmentation: bool = Field(True, title="Whether to output the 8 mask segmentation volume.")
+    out_surface_type: str = Field("both", title="Whether to output pial/WM surface meshes. Options:'pial','wm','both'")
+    out_surface_mesh: bool = Field(True, title="Whether to output the selected type surface mesh (with CTh overlay).")
+    out_curvature_mesh: bool = Field(False, title="Whether to output the curvature surface mesh.")
+    out_t1w_overlay_mesh: bool = Field(False, title="Whether to output the T1w intensity overlay surface mesh.")
+    out_surface_fs: bool = Field(True, title="Whether to output the FreeSurfer surface files.")
+    out_level_set: bool = Field(False, title="Whether to output the selected type level set volumes.")
+    out_distance_set: bool = Field(False, title="Whether to output the selected type distance set volumes.")
     
     # Network outputs for training and testing
-    out_wm_surface_distance_set: bool = Field(True, title="Whether to include the white matter surface distance set as an output of the network")
-    out_pial_surface_level_set: bool = Field(True, title="Whether to include the pial surface level set as an output of the network")
-    out_wm_surface_level_set: bool = Field(True, title="Whether to include the white matter surface level set as an output of the network")
-    out_pial_surface_distance_set: bool = Field(True, title="Whether to include the pial surface distance set as an output of the network")
+    out_wm_surface_distance_set: bool = Field(True, title="Whether the network outputs the WM surface distance set.")
+    out_pial_surface_level_set: bool = Field(True, title="Whether the network outputs the pial surface level set.")
+    out_wm_surface_level_set: bool = Field(True, title="Whether the network outputs the WM surface level set.")
+    out_pial_surface_distance_set: bool = Field(True, title="Whether the network outputs the pial surface distance set")
 
     # in_filters : PositiveInt = Field(4, title="Number of filters in the first convolutional layer")
     @property
     def in_filters(cls):
-        return get_filters_from_list([cls.in_T1, cls.in_gm_probability_map, cls.in_wm_probability_map, cls.in_segmentation])
+        return get_filters_from_list([cls.in_T1, cls.in_gm_probability_map, cls.in_wm_probability_map,\
+            cls.in_segmentation])
     
     @property
     def out_cardinality(cls):
-        return get_filters_from_list([cls.out_pial_surface_level_set, cls.out_wm_surface_level_set, cls.out_pial_surface_distance_set, cls.out_wm_surface_distance_set])
+        return get_filters_from_list([cls.out_pial_surface_level_set, cls.out_wm_surface_level_set, \
+            cls.out_pial_surface_distance_set, cls.out_wm_surface_distance_set])
 
 
 class TestConfig(BaseModel):
-    pial_mc_level: float = Field(1.0, title="The level values to pass marching cubes algorithm. Any value higher than 0 'cuts' deeper into the mesh")
-    pial_norm_multiplier: float = Field(1.05, title="The value to multiply the vertices norms by. This 'inflates' the mesh after previous 'cutting' from a high level in MC") 
-    wm_mc_level: float = Field(0.25, title="The level values to pass marching cubes algorithm. Any value higher than 0 'cuts' deeper into the mesh")
-    wm_norm_multiplier: float = Field(0.15, title="The value to multiply the vertices norms by. This 'inflates' the mesh after previous 'cutting' from a high level in MC") 
+    pial_mc_level: float = Field(1.0, title="The level values to pass marching cubes algorithm.")
+    pial_norm_multiplier: float = Field(1.05, title="The value to multiply the vertices norms by.") 
+    wm_mc_level: float = Field(0.25, title="The level values to pass marching cubes algorithm.")
+    wm_norm_multiplier: float = Field(0.15, title="The value to multiply the vertices norms by.") 
     mesh_decimation_target: PositiveInt = Field(75000, title="Number of vertices in the mesh")
-    apply_mesh_post_processing: bool = Field(True, title="Whether to apply mesh post processing. See apply post processing in mesh_manager.py for more details.")
-    keep_mesh_in_memory: bool = Field(False, title="When running inference or model testing, we can keep predicted mesh in memory (TRUE) after parallel processing if using for further analysis or dump from memory (FALSE) if only generated for metrics. Meshes will still be saved to disk if flagged.")
-    limit_cpu_count: int = Field(None, title="Limit the number of CPU cores used during inference or model testing. If None, use all available cores minus one.")
-    device: str = Field('auto', title="Device to use for inference. Options are 'auto', 'cpu' or 'gpu'. If 'auto', the script will use GPU if available, otherwise CPU.")
+    apply_mesh_post_processing: bool = Field(True, title="Whether to apply mesh post processing. See mesh_manager.py.")
+    keep_mesh_in_memory: bool = Field(False, title="Whether to keep the mesh in memory for further processing.")
+    limit_cpu_count: int = Field(None, title="Limit the number of CPU cores. Default is max-1")
+    device: str = Field('auto', title="Device to use for inference. Options are 'auto', 'cpu' or 'gpu'.")
 
 class NetConfig(BaseModel):
     num_initial_filter: PositiveInt = Field(4, title="number of filters in the first block")
@@ -85,11 +89,11 @@ class NetConfig(BaseModel):
     bn: str = Field("GN", title="whether use batch norm (BN) or GroupNorm (GN) or None")
     kernel_initializer: str = Field("he_normal", title="kernel initializer")
     kernel_regularizer: PositiveFloat = Field(1e-2, title="l2 penalty")
-    skip_connection_type: str = Field("Concatenate", title="How to merge the skip connection to the decoder. Could be 'Add' or 'Concatenate'")
+    skip_connection_type: str = Field("Concatenate", title="How to merge skip to the decoder. 'Add' or 'Concatenate'")
     n_identity_layers: PositiveInt = Field(3, title = "The number of repetitions for each conv block up and down")
-    squeeze_excite: bool = Field(False, title="Use squeeze and excitation blocks as part of the network to optimise features activation")
+    squeeze_excite: bool = Field(False, title="Squeeze + excitation blocks in network to optimise features activation")
     split_decoder_level: NonNegativeInt = Field(4, title="Number of split to use in the encoder and decoder")
-    saved_weights_path : str = Field(None, title="Path of initial weights for continuing a previous training. The configuration must be the same as before")    
+    saved_weights_path : str = Field(None, title="Path of initial weights for continuing a previous training.")    
 
     @validator('skip_connection_type')
     def norm_check(cls, v):
@@ -102,10 +106,10 @@ class NetConfig(BaseModel):
         return [int(np.clip(cls.num_initial_filter * (2 ** i), 1, 128)) for i in range(cls.num_blocks_per_level)]
 
 class LossConfig(BaseModel):
-    level_set_0_loss: str = Field('ranged_weighted_mae', title="Loss for level_set_0 output. See `DeepThickness.model.losses.losses_level_set` for a list on available losses")
-    distance_set_0_loss: str = Field('weighted_mae_0', title="Loss for distance_set_0 output. See `DeepThickness.model.losses.losses_distance_set` for a list on available losses")
+    level_set_0_loss: str = Field('ranged_weighted_mae', title="Loss for level_set_0 output.")
+    distance_set_0_loss: str = Field('weighted_mae_0', title="Loss for distance_set_0 output.")
     target_max: PositiveFloat = Field(1.0, title='Maximum value of the target range to weight. Min = (Max-1).')
-    target_gradient: str = Field('step', title='Slope vs step is a gradual vs immediate descent of weighting applied to non-capped values outside the target range')
+    target_gradient: str = Field('step', title='Slope vs step of weighting for non-capped values outside target range')
     range_weight: PositiveFloat = Field(10.0, title='weighting applied to values inside the target range')
     kl_weight: NonNegativeFloat = Field(0.1, title='weighting applied to kl divergence loss value')
 
