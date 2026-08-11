@@ -2,7 +2,6 @@
 
 ![Schema](<media/NeuroMorph_Schema.png>)
 
-> **NeuroMorph is a deep learning framework for individualized cortical feature extraction from T1w structural MRI scans. The framework consists of two deep learning models *`LODBrain+`* for cortical segmentation and *`DeepThickness`* for cortical surface reconstruction and thickness estimation.**
 
 📄 [Paper (medRxiv)](placeholder) &nbsp;|&nbsp; 
 🖥️ [Website](https://github.com/rockNroll87q/NeuroMorph) &nbsp;|&nbsp; 
@@ -10,6 +9,12 @@
 ⚙️ [Installation Guide](./docs/installation.md) &nbsp;|&nbsp;
 🐳 [Docker](https://hub.docker.com/r/rocknroll87q/neuromorph) &nbsp;|&nbsp; 
 📦 [Weights](https://huggingface.co/NeuroAI-UofG/NeuroMorph) &nbsp;|&nbsp;
+📈 [Morphological Profiling](https://github.com/rockNroll87q/morphological_profiling) &nbsp;|&nbsp; 
+
+> **NeuroMorph is a deep learning framework for individualized cortical feature extraction from T1w structural MRI scans. The framework consists of two deep learning models *`LODBrain+`* for cortical segmentation and *`DeepThickness`* for cortical surface reconstruction and thickness estimation.** 
+
+*Morphological profiles* used in the paper were derived by applying normative modelling to the cortical features extracted by NeuroMorph. See *[Morphological Profiling](https://github.com/rockNroll87q/morphological_profiling)* for additional code relating to normative modelling and classification.
+
 
 
 ## What it does
@@ -22,11 +27,13 @@ NeuroMorph takes a T1w MRI scan and produces:
 >| `cortical_segmentation` *(optional)* | Predicted cortical segmentation mask | `.nii.gz` |
 >| `cortical_surface` *(optional)* | Predicted cortical surface mesh | `.ply` or `.surf` |
 
-**`subjects_morphology` feature breakdown**
 
-Volumetric Features (8): GM, WM, ICV, CSF, Ventricles, Basal Ganglia, Brainstem, Cerebellum
+**`subjects_morphology` feature breakdown:**
 
-Surface Features (5): Cortical Thickness, Pial Curvature, WM Curvature, Pial Surface Area, WM Surface Area
+**Volumetric Features (8):** GM, WM, ICV, CSF, Ventricles, Basal Ganglia, Brainstem, Cerebellum
+
+**Surface Features (5):** Cortical Thickness, Pial Curvature, WM Curvature, Pial Surface Area, WM Surface Area.
+
 To understand the differences in outputs and how they might be used, see [outputs](./Inference_Guide.ipynb) "`Saving Options`".
 
 
