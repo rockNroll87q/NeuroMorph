@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neuromorph"
+version = "0.1.0"
+description = "NeuroMorph: A Unified Morphological Reference Space for Cross-disease Brain Profiling"
+readme = "README.md"
+requires-python = ">=3.8.10,<3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "Connor Dalby", email = "c.dalby.1@research.gla.ac.uk"},
+]
+
+dependencies = [
+    "tensorflow==2.13.0",
+    "tensorflow-addons==0.21.0",
+    "ipython",
+    "albumentations",
+    "nibabel",
+    "scipy",
+    "typeguard",
+    "opencv-python",
+    "elasticdeform",
+    "loguru",
+    "pydantic",
+    "pandas",
+    "pymeshlab",
+    "plotly",
+    "seaborn",
+    "open3d",
+    "vtk",
+    "fast_simplification",
+    "nvidia-ml-py3",
+    "pyvista",
+    "psutil",
+    "pynvml",
+    "scikit-image",
+    "tqdm",
+    "openneuro-py",
+]
+
+[project.urls]
+Repository = "https://github.com/rockNroll87q/NeuroMorph"
+
+[tool.setuptools.packages.find]
+where = ["src"]
