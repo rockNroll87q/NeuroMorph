@@ -3,7 +3,7 @@ layout: page
 title: <a href="https://rocknroll87q.github.io/neuromorph/">NeuroMorph</a>
 ---
 
-### Abstract
+# Abstract
 
 
 Structural MRI is routinely acquired in clinical practice, yet quantitative morphometry has had limited impact on clinical decision-making. 
@@ -17,7 +17,7 @@ Code, model, and demo are available on the [GitHub repository](https://github.co
 
 
 
-### Citation
+# Citation
 <hr>
 
 If you find this work useful, please consider citing our paper:
@@ -38,7 +38,7 @@ To be released soon!
 ``` -->
 
 
-### Acknowledgments
+# Acknowledgments
 <hr>
 
 We acknowledge the MVLS Advanced Research System (MARS) at the University of Glasgow for providing high-performance computing resources and technical support.
