@@ -16,9 +16,9 @@ Code, model, and demo are available on the [GitHub repository](https://github.co
 </p>
 
 
-
-# Citation
 <hr>
+# Citation
+
 
 If you find this work useful, please consider citing our paper:
 To be released soon!
@@ -37,9 +37,9 @@ To be released soon!
 }
 ``` -->
 
-
-# Acknowledgments
 <hr>
+# Acknowledgments
+
 
 We acknowledge the MVLS Advanced Research System (MARS) at the University of Glasgow for providing high-performance computing resources and technical support.
 
