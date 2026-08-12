@@ -3,8 +3,6 @@ layout: page
 title: <a href="https://rocknroll87q.github.io/neuromorph/">NeuroMorph</a>
 ---
 
-# **NeuroMorph: A Unified Morphological Reference Space for Cross-Disease Brain Profiling**
-
 ### Abstract
 
 
