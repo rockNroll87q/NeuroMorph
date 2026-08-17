@@ -4,7 +4,7 @@
 
 
 📄 [Paper (medRxiv)](placeholder) &nbsp;|&nbsp; 
-🖥️ [Website](https://rocknroll87q.github.io/neuromorph/) &nbsp;|&nbsp; 
+🖥️ [Website](https://rocknroll87q.github.io/NeuroMorph/) &nbsp;|&nbsp; 
 📓 [Inference Guide](./Inference_Guide.ipynb) &nbsp;|&nbsp;
 ⚙️ [Installation Guide](./docs/installation.md) &nbsp;|&nbsp;
 🐳 [Docker](https://hub.docker.com/r/rocknroll87q/neuromorph) &nbsp;|&nbsp; 
@@ -99,9 +99,20 @@ For working examples and more usage cases, see [Inference Examples](./Inference_
 ## Citation
 
 If you use NeuroMorph in your research, please cite:
-
-TODO: Add citation information here.
-
+```bibtex
+@article {DalbyNeuroMorph2026,
+	author = {Dalby, Connor and Dibble, Austin and Benini, Sergio and Ferrari, Damiano and Lyall, Donald M and Harvey, Monika and Quinn, Terry and Muckli, Lars and Fracasso, Alessio and Svanera, Michele and {Alzheimer's Disease Neuroimaging Initiative} and {Frontotemporal Lobar Degeneration Neuroimaging Initiative}},
+	title = {NeuroMorph: A Unified Morphological Reference Space for Cross-Disease Brain Profiling},
+	elocation-id = {2026.08.13.26359403},
+	year = {2026},
+	doi = {10.64898/2026.08.13.26359403},
+	publisher = {Cold Spring Harbor Laboratory Press},
+	abstract = {Structural MRI is routinely acquired in clinical practice, yet quantitative morphometry has had limited impact on clinical decision-making. Overlapping symptoms, trajectories and comorbidities remain difficult to interpret within disease-specific frameworks, leaving it unclear how individual patients relate to the broader organization of brain disease. Here, we construct a cross-disease morphological reference space from 110,591 T1w MRI scans of 78,794 participants, spanning four disease families, 19 diagnoses, and seven subtypes. To construct this space, we developed NeuroMorph, an AI framework deriving thirteen interpretable morphological descriptors and individual normative deviation profiles. The reference space reveals shared and distinct morphological signatures that distinguish conditions within a hierarchy of disease families, diagnoses, subtypes and individual profiles. It identifies overlapping and comorbid morphological profiles and captures longitudinal deviations that precede clinical diagnosis and track progression. Together, these findings establish a unified framework for mapping brain disease organization and positioning individual patients within its morphological landscape.},
+	URL = {https://www.medrxiv.org/content/10.64898/2026.08.13.26359403v1},
+	eprint = {https://www.medrxiv.org/content/10.64898/2026.08.13.26359403v1.full.pdf},
+	journal = {medRxiv}
+}
+```
 
 
 ## License
