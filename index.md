@@ -21,21 +21,20 @@ Code, model, and demo are available on the [GitHub repository](https://github.co
 
 
 If you find this work useful, please consider citing our paper:
-To be released soon!
-<!-- ```bibtex
-@article {DibbleNeuroFM2026,
-	author = {Dibble, Austin and Dalby, Connor and Sevegnani, Michele and Fracasso, Alessio and Lyall, Donald M and Harvey, Monika and Svanera, Michele},
-	title = {NeuroFM: Toward Precision Neuroimaging with Foundation Models for Individualized Brain Health Estimation},
-	elocation-id = {2026.03.27.26349489},
+```bibtex
+@article {DalbyNeuroMorph2026,
+	author = {Dalby, Connor and Dibble, Austin and Benini, Sergio and Ferrari, Damiano and Lyall, Donald M and Harvey, Monika and Quinn, Terry and Muckli, Lars and Fracasso, Alessio and Svanera, Michele and {Alzheimer's Disease Neuroimaging Initiative} and {Frontotemporal Lobar Degeneration Neuroimaging Initiative}},
+	title = {NeuroMorph: A Unified Morphological Reference Space for Cross-Disease Brain Profiling},
+	elocation-id = {2026.08.13.26359403},
 	year = {2026},
-	doi = {10.64898/2026.03.27.26349489},
+	doi = {10.64898/2026.08.13.26359403},
 	publisher = {Cold Spring Harbor Laboratory Press},
-	abstract = {Precision neuroimaging aims to deliver individualized assessments of brain health, yet a single structural MRI does not yield a multidimensional, quantitative summary of an individual{\textquoteright}s current health or future risk. Existing approaches optimize task-specific objectives, yielding representations entangled with cohort- or disease-specific signals rather than capturing biologically grounded patterns of anatomical variation. Here, we introduce NeuroFM, a foundation model trained exclusively on 100,000 healthy synthetic volumes to predict morphometric and demographic targets. Without exposure to diagnostic labels, NeuroFM organizes brain MRIs into population-level patterns that encode meaningful brain health differences. These representations transfer across five neuroscience domains without adaptation and support simple linear readouts for clinical, cognitive, developmental, socio-behavioural, and image quality control. Evaluated on 136,361 real volumes spanning multiple cohorts, NeuroFM generalizes across domains and enables individual-level brain health profiling, estimating future dementia risk years before diagnosis. Together, these findings establish a disease-naive foundation model paradigm for precision neuroimaging. Code available at: https://rocknroll87q.github.io/NeuroFM/},
-	URL = {https://www.medrxiv.org/content/early/2026/03/31/2026.03.27.26349489},
-	eprint = {https://www.medrxiv.org/content/early/2026/03/31/2026.03.27.26349489.full.pdf},
+	abstract = {Structural MRI is routinely acquired in clinical practice, yet quantitative morphometry has had limited impact on clinical decision-making. Overlapping symptoms, trajectories and comorbidities remain difficult to interpret within disease-specific frameworks, leaving it unclear how individual patients relate to the broader organization of brain disease. Here, we construct a cross-disease morphological reference space from 110,591 T1w MRI scans of 78,794 participants, spanning four disease families, 19 diagnoses, and seven subtypes. To construct this space, we developed NeuroMorph, an AI framework deriving thirteen interpretable morphological descriptors and individual normative deviation profiles. The reference space reveals shared and distinct morphological signatures that distinguish conditions within a hierarchy of disease families, diagnoses, subtypes and individual profiles. It identifies overlapping and comorbid morphological profiles and captures longitudinal deviations that precede clinical diagnosis and track progression. Together, these findings establish a unified framework for mapping brain disease organization and positioning individual patients within its morphological landscape.},
+	URL = {https://www.medrxiv.org/content/10.64898/2026.08.13.26359403v1},
+	eprint = {https://www.medrxiv.org/content/10.64898/2026.08.13.26359403v1.full.pdf},
 	journal = {medRxiv}
 }
-``` -->
+```
 
 <hr>
 # Acknowledgments
