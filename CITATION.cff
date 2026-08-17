@@ -1,0 +1,129 @@
+cff-version: 1.0
+title: "NeuroMorph: A Unified Morphological Reference Space for Cross-Disease Brain Profiling"
+message: "If you use this repository, please cite it using our paper's DOI: https://doi.org/10.64898/2026.08.13.26359403"
+type: software
+license: "CC-BY-NC-ND-4.0"
+
+repository-code: "https://github.com/rockNroll87q/NeuroMorph"
+
+version: "1.0"  
+date-released: 2026-08-14
+
+authors:
+  - family-names: Dalby
+    given-names: Connor
+    orcid: http://orcid.org/0009-0005-5705-061X
+    affiliation: University of Glasgow
+  - family-names: Dibble
+    given-names: Austin
+    orcid: http://orcid.org/0009-0008-3963-041X
+    affiliation: University of Glasgow
+  - family-names: Benini
+    given-names: Sergio
+    orcid: http://orcid.org/0000-0003-2152-9424
+    affiliation: University of Brescia
+  - family-names: Ferrari
+    given-names: Damiano
+    affiliation: University of Brescia
+  - family-names: Lyall
+    given-names: Donald M
+    orcid: http://orcid.org/0000-0003-3850-1487
+    affiliation: University of Glasgow
+  - family-names: Harvey
+    given-names: Monika
+    orcid: http://orcid.org/0000-0003-1694-1174
+    affiliation: University of Glasgow
+  - family-names: Quinn
+    given-names: Terry
+    affiliation: University of Glasgow
+  - family-names: Muckli
+    given-names: Lars
+    orcid: http://orcid.org/0000-0002-0143-4324
+    affiliation: University of Glasgow
+  - family-names: Fracasso
+    given-names: Alessio
+    orcid: http://orcid.org/0000-0002-4542-112X
+    affiliation: University of Glasgow
+  - family-names: Svanera
+    given-names: Michele
+    orcid: http://orcid.org/0000-0002-7828-9209
+    affiliation: University of Glasgow
+  - name: "Alzheimer's Disease Neuroimaging Initiative"
+  - name: "Frontotemporal Lobar Degeneration Neuroimaging Initiative"
+
+abstract: >
+  Structural MRI is routinely acquired in clinical practice, yet quantitative
+  morphometry has had limited impact on clinical decision-making. Overlapping
+  symptoms, trajectories and comorbidities remain difficult to interpret
+  within disease-specific frameworks, leaving it unclear how individual
+  patients relate to the broader organization of brain disease. NeuroMorph is
+  an AI framework that constructs a cross-disease morphological reference
+  space from 110,591 T1w MRI scans of 78,794 participants, spanning four
+  disease families, 19 diagnoses, and seven subtypes, deriving thirteen
+  interpretable morphological descriptors and individual normative deviation
+  profiles. The reference space reveals shared and distinct morphological
+  signatures across disease families, diagnoses, subtypes and individual
+  profiles, and captures longitudinal deviations that precede clinical
+  diagnosis and track progression.
+
+keywords:
+  - neuroimaging
+  - morphometry
+  - brain disease
+  - MRI
+  - deep learning
+  - normative modelling
+
+preferred-citation:
+  type: article
+  title: "NeuroMorph: A Unified Morphological Reference Space for Cross-Disease Brain Profiling"
+  authors:
+    - family-names: Dalby
+      given-names: Connor
+      orcid: http://orcid.org/0009-0005-5705-061X
+      affiliation: University of Glasgow
+    - family-names: Dibble
+      given-names: Austin
+      orcid: http://orcid.org/0009-0008-3963-041X
+      affiliation: University of Glasgow
+    - family-names: Benini
+      given-names: Sergio
+      orcid: http://orcid.org/0000-0003-2152-9424
+      affiliation: University of Brescia
+    - family-names: Ferrari
+      given-names: Damiano
+      affiliation: University of Brescia
+    - family-names: Lyall
+      given-names: Donald M
+      orcid: http://orcid.org/0000-0003-3850-1487
+      affiliation: University of Glasgow
+    - family-names: Harvey
+      given-names: Monika
+      orcid: http://orcid.org/0000-0003-1694-1174
+      affiliation: University of Glasgow
+    - family-names: Quinn
+      given-names: Terry
+      affiliation: University of Glasgow
+    - family-names: Muckli
+      given-names: Lars
+      orcid: http://orcid.org/0000-0002-0143-4324
+      affiliation: University of Glasgow
+    - family-names: Fracasso
+      given-names: Alessio
+      orcid: http://orcid.org/0000-0002-4542-112X
+      affiliation: University of Glasgow
+    - family-names: Svanera
+      given-names: Michele
+      orcid: http://orcid.org/0000-0002-7828-9209
+      affiliation: University of Glasgow
+    - name: "Alzheimer's Disease Neuroimaging Initiative"
+    - name: "Frontotemporal Lobar Degeneration Neuroimaging Initiative"
+  journal: "medRxiv"
+  year: 2026
+  doi: "10.64898/2026.08.13.26359403"
+  url: "https://www.medrxiv.org/content/10.64898/2026.08.13.26359403v1"
+
+identifiers:
+  - type: doi
+    value: "10.64898/2026.08.13.26359403"
+    description: "medRxiv preprint"
