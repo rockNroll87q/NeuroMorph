@@ -476,6 +476,7 @@ class CorticalSurfaceMap:
         mesh_set = pml.MeshSet()
         mesh_set.add_mesh(pml.Mesh(self.vertices, self.faces))
         surface_area = mesh_set.get_geometric_measures()['surface_area']
+        surface_area = surface_area*0.0001 # Convert from mm^2 to cm^2
         return surface_area
 
 
@@ -493,12 +494,11 @@ class CorticalSurfaceMap:
             surface area, and curvature for this mesh.
         
         """
-        surface_prefix = f'{surface_type.capitalize()}_' if surface_type is not None else "" 
         
         subject_results = {
-            f"{surface_prefix}Mean_Predicted_CTh": self.vertices_values.mean(),
-            f"{surface_prefix}Mesh_Predicted_Surface_Area": self.get_surface_area(),
-            f"{surface_prefix}Mesh_Predicted_Curvature": self.get_average_curvature(),
+            "Mean_Predicted_CTh": self.vertices_values.mean(),
+            "Mesh_Predicted_Surface_Area": self.get_surface_area(),
+            "Mesh_Predicted_Curvature": self.get_average_curvature(),
         }
         
         return subject_results
