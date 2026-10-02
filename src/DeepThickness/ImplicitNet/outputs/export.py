@@ -17,6 +17,7 @@ import os
 import nibabel as nib
 import numpy as np
 import pandas as pd
+from nibabel.affines import rescale_affine
 
 from DeepThickness.python_utils import flatten_dict
 
@@ -157,18 +158,25 @@ def save_predicted_meshes(pred_ct_map, quality_mapper, config, subj_dir, subject
                         quality_mapper_path=None)
                                     
 def compute_conform_affine(orig_affine, orig_shape, orig_zooms,
-                           target_shape=(256,256,256),
-                           target_zooms=(1.0,1.0,1.0),
-                           target_axes=('L','I','A')):
+                            target_shape=(256, 256, 256),
+                            target_zooms=(1.0, 1.0, 1.0),
+                            target_axes=('L', 'I', 'A')):
     """
-    Compute the exact affine that maps voxels in a would-be-conformed
-    image (new shape, zooms, axes) directly into world space—
-    without ever touching image data.
+    Summary:
+        Computes the affine that a conformed volume would have, given only
+        the original volume's affine and shape, without resampling any
+        data. Reproduces nibabel.processing.conform exactly, reorienting
+        via ornt_transform then calling nibabel.affines.rescale_affine for
+        the shape and zoom change, so a prediction made on the conformed
+        volume can be saved with an affine that aligns it, in world space,
+        to the original unconformed volume.
 
     Args:
         orig_affine (np.ndarray): Original 4x4 voxel-to-world affine.
         orig_shape (tuple): Original volume shape (x, y, z).
-        orig_zooms (tuple): Original voxel sizes (x, y, z).
+        orig_zooms (tuple): Unused. Kept for call-site compatibility. The
+            zooms are derived from orig_affine instead, so they can never
+            drift out of sync with it.
         target_shape (tuple, optional): Target volume shape.
         target_zooms (tuple, optional): Target voxel sizes.
         target_axes (tuple, optional): Target axis codes.
@@ -182,40 +190,13 @@ def compute_conform_affine(orig_affine, orig_shape, orig_zooms,
     targ_ornt = nib.orientations.axcodes2ornt(target_axes)
     # 3) the permutation+flip that takes you from orig→target
     ornt_trans = nib.orientations.ornt_transform(orig_ornt, targ_ornt)
-
     # 4) build the 4×4 index-space affine 
     inv_aff = nib.orientations.inv_ornt_aff(ornt_trans, orig_shape)
 
-    # 5) compute the shape of image *after* that reorientation
-    oriented_shape = tuple(orig_shape[int(axis)] for axis, _ in ornt_trans)
+    reoriented_affine = orig_affine @ inv_aff
+    oriented_shape = [orig_shape[int(axis)] for axis, _ in ornt_trans]
 
-    # 6) figure out how many voxels of pad (or crop) on each side
-    #    to go from `oriented_shape` → `target_shape`, and
-    #    *center* it:
-    pad = (np.array(target_shape) - np.array(oriented_shape)) / 2.0
-
-    # 7) fold that pad into index-space transform:
-    #    we want
-    #       v_old = inv_aff @ (v_new - pad)
-    #    which is the same as
-    #       inv_aff_pad @ v_new   with
-    #       inv_aff_pad[:3,3] = inv_aff[:3,3] - inv_aff[:3,:3] @ pad
-    inv_aff_pad = inv_aff.copy()
-    inv_aff_pad[:3, 3] = inv_aff[:3, 3] - (inv_aff[:3, :3] @ pad)
-
-    # 8) now build final affine in one go:
-    #    new_voxel → old_index → world
-    new_affine = orig_affine @ inv_aff_pad
-
-    # 9) finally, strip out the old zooms and re-apply new zooms,
-    #    so that the rotational “directions” stay exactly the same,
-    #    but the voxel size becomes `target_zooms`:
-    #       take the 3×3 from new_affine, divide by orig_zooms, *then*
-    #       multiply by target_zooms
-    dircos = new_affine[:3, :3] / np.array(orig_zooms)[None, :]
-    new_affine[:3, :3] = dircos * np.array(target_zooms)[None, :]
-
-    return new_affine
+    return rescale_affine(reoriented_affine, oriented_shape, target_zooms, target_shape)
 
 def save_subject_volumes(
     subject_i_save_data, config, 
@@ -291,7 +272,7 @@ def save_subject_volumes(
         # Segmentation Mask
         if config.input_output.out_segmentation is True:
             segmentation_mask_path = f"{subj_dir}/pred_segmentation_mask.nii.gz"
-            if isinstance(segmentation_mask, np.ndarray) and not os.path.exists(segmentation_mask_path):
+            if isinstance(segmentation_mask, np.ndarray):
                 nib.save(
                     nib.Nifti1Image(segmentation_mask, conform_affine, native_header),
                     segmentation_mask_path,

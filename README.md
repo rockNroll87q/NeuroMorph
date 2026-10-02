@@ -3,7 +3,7 @@
 ![Schema](<media/NeuroMorph_Schema.png>)
 
 
-📄 [Paper (medRxiv)](placeholder) &nbsp;|&nbsp; 
+📄 [Paper (medRxiv)](https://www.medrxiv.org/content/10.64898/2026.08.13.26359403v1) &nbsp;|&nbsp; 
 🖥️ [Website](https://rocknroll87q.github.io/NeuroMorph/) &nbsp;|&nbsp; 
 📓 [Inference Guide](./Inference_Guide.ipynb) &nbsp;|&nbsp;
 ⚙️ [Installation Guide](./docs/installation.md) &nbsp;|&nbsp;

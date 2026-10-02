@@ -200,7 +200,14 @@ def extract_volumetric_features(segmentation_mask):
         'Brainstem Volume': brainstem_volume,
         'CSF Volume': csf_volume,
     }
-
+    
+    # Scale volumetrics to be in mm3
+    normalised_volumetrics = ['GM Volume', 'WM Volume', 'Ventricular Volume', 'Basal Ganglia Volume',
+                'Cerebellum Volume', 'Brainstem Volume', 'CSF Volume']
+    for vol in normalised_volumetrics:
+        volumetrics[vol] *= 100
+    volumetrics['Intracranial Volume'] *= 0.0001
+    
     return volumetrics
     
 def subject_generate_mesh(
