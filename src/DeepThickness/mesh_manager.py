@@ -476,7 +476,7 @@ class CorticalSurfaceMap:
         mesh_set = pml.MeshSet()
         mesh_set.add_mesh(pml.Mesh(self.vertices, self.faces))
         surface_area = mesh_set.get_geometric_measures()['surface_area']
-        surface_area = surface_area*0.0001 # Convert from mm^2 to cm^2
+        surface_area = surface_area*0.01 # Convert from mm^2 to cm^2
         return surface_area
 
 
